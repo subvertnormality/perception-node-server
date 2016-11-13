@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package control;
+
+service Control {
+  // Sends a greeting
+  rpc handleKeyEvent (KeyEvent) returns (Reply) {};
+  rpc handleImageGetEvent (EmptyEvent) returns (ImageReply) {};
+  rpc handleSayTextEvent (TextEvent) returns (Reply) {};
+}
+
+message EmptyEvent {
+}
+
+message TextEvent {
+  string text = 1;
+}
+
+message KeyEvent {
+  int32 key_code = 1;
+  int32 is_shift_down = 2;
+  int32 is_ctrl_down = 3;
+  int32 is_alt_down = 4;
+  bool is_key_down = 5;
+}
+
+message ImageReply {
+  bytes image = 1;
+}
+
+message Reply {
+  string message = 1;
+}
