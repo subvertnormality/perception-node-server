@@ -3,7 +3,7 @@ const app = express();
 const http = require('http').Server(app);
 const grpc = require('grpc');
 const control = grpc.load(__dirname + '/protos/control.proto').control;
-const rpcStub = new control.Control('localhost:50051', grpc.credentials.createInsecure());
+const rpcStub = new control.Control('1.tcp.eu.ngrok.io:20187', grpc.credentials.createInsecure());
 const initIo = require('./lib/io');
 
 app.get('/', function (req, res) {
