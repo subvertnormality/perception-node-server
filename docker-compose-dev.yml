@@ -7,6 +7,8 @@ services:
         links:
             - redis
         restart: always
+        volumes:
+            - ./
     redis:
         image: redis
         ports:

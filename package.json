@@ -1,12 +1,18 @@
 {
   "name": "cozmo-node-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "server.js",
   "dependencies": {
+    "connect-redis": "^3.1.0",
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
+    "express-session": "^1.14.2",
     "google-protobuf": "^3.1.1",
     "grpc": "^1.0.1",
+    "passport": "^0.3.2",
+    "passport-twitchtv": "^0.1.4",
+    "passport.socketio": "^3.7.0",
     "socket.io": "^1.5.1",
     "zerorpc": "^0.9.6",
     "zmq": "^2.15.3"
