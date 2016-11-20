@@ -7,8 +7,8 @@ services:
         links:
             - redis
         restart: always
-        volumes:
-            - ./
+        environment:
+            - ADDR=http://127.0.0.1:3000/
     redis:
         image: redis
         ports:

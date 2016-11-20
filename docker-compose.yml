@@ -7,6 +7,8 @@ services:
         links:
             - redis
         restart: always
+        environment:
+            - ADDR=http://138.197.18.129:3000/
     redis:
         image: redis
         ports:
