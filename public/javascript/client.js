@@ -84,12 +84,27 @@ function handleTextInput(textField) {
     }
 }
 
-socket.on('return_image', function(image) {
+function setupCozmoStream() {
+    var canvas = document.getElementById('cozmoStream');
+    var context = canvas.getContext('2d');
+    var img = new Image();
 
-    var bytes = new Uint8Array(image);
+    img.onload = function() {
+        context.drawImage(this, 0, 0, 640, 480);
+    }
 
-    document.getElementById('cozmoImageId').src='data:image/png;base64,'+encode(bytes);
-});
+    img.src = 'assets/placeholder.png';
+
+    socket.on('return_image', function(image) {
+
+        var bytes = new Uint8Array(image);
+
+        img.src = 'data:image/png;base64,'+encode(bytes);
+
+    });
+}
+
+setupCozmoStream();
 
 document.addEventListener('keydown', function(e) { handleKeyActivity(e, true) });
 document.addEventListener('keyup',   function(e) { handleKeyActivity(e, false) });
