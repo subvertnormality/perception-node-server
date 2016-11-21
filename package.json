@@ -19,7 +19,11 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-dev": "docker-compose -f docker-compose-dev.yml build",
+    "dev": "docker-compose -f docker-compose-dev.yml up",
+    "build-prod": "docker-compose build",
+    "prod": "docker-compose up"
   },
   "author": "Andrew Hillel",
   "license": "ISC"

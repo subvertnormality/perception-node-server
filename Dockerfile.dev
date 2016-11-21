@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /usr/perception
 ADD package.json package.json
 RUN npm install
+RUN npm install -g nodemon
 ADD . .
-CMD ["npm","start"]
+CMD ["nodemon", "--debug", "-L"]
 EXPOSE 3000
