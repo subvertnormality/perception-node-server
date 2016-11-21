@@ -8,7 +8,9 @@ services:
             - redis
         restart: always
         environment:
+            - ENV=prod
             - ADDR=http://138.197.18.129:3000/
+            - RPC_ADDR=1.tcp.eu.ngrok.io:20187
     redis:
         image: redis
         ports:

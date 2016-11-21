@@ -6,14 +6,17 @@ services:
             dockerfile: Dockerfile.dev
         ports:
             - "3000:3000"
+            - "127.0.0.1:50051:50051"
         links:
             - redis
         restart: always
         environment:
+            - ENV=dev
             - ADDR=http://127.0.0.1:3000/
         volumes:
             - ./lib:/usr/perception/lib
             - ./public:/usr/perception/public
+            - ./ip.tmp:/usr/perception/ip.tmp
     redis:
         image: redis
         ports:
