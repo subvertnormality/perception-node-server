@@ -10,9 +10,11 @@
     "express-session": "^1.14.2",
     "google-protobuf": "^3.1.1",
     "grpc": "^1.0.1",
+    "nohm": "^0.9.8",
     "passport": "^0.3.2",
     "passport-twitchtv": "^0.1.4",
     "passport.socketio": "^3.7.0",
+    "redis": "^2.6.3",
     "socket.io": "^1.5.1",
     "zerorpc": "^0.9.6",
     "zmq": "^2.15.3"
