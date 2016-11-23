@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "dependencies": {
+    "app-root-path": "^2.0.1",
     "connect-redis": "^3.1.0",
     "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
@@ -24,10 +25,11 @@
     "chai": "^3.5.0",
     "mocha": "^3.1.2",
     "rewire": "^2.5.2",
-    "sinon": "^1.17.6"
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha ./test --recursive --use_strict",
+    "test": "mocha test --recursive",
     "build-dev": "(node util/local-ip.js > ip.tmp) && docker-compose -f docker-compose-dev.yml build",
     "dev": "(node util/local-ip.js > ip.tmp) && docker-compose -f docker-compose-dev.yml up",
     "build-prod": "docker-compose build",
