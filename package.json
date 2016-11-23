@@ -10,6 +10,7 @@
     "express-session": "^1.14.2",
     "google-protobuf": "^3.1.1",
     "grpc": "^1.0.1",
+    "lodash": "^4.17.2",
     "nohm": "^0.9.8",
     "passport": "^0.3.2",
     "passport-twitchtv": "^0.1.4",
@@ -19,9 +20,14 @@
     "zerorpc": "^0.9.6",
     "zmq": "^2.15.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2",
+    "rewire": "^2.5.2",
+    "sinon": "^1.17.6"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/mocha/bin/mocha ./test --recursive --use_strict",
     "build-dev": "(node util/local-ip.js > ip.tmp) && docker-compose -f docker-compose-dev.yml build",
     "dev": "(node util/local-ip.js > ip.tmp) && docker-compose -f docker-compose-dev.yml up",
     "build-prod": "docker-compose build",
