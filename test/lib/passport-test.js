@@ -21,6 +21,7 @@ describe('Passport authentication', () => {
   let dbMock;
   let profileMock;
   let passportCallback;
+  let deserializeUser;
 
   before(() => {
     dbMock = {
@@ -45,7 +46,7 @@ describe('Passport authentication', () => {
     
     resetRewires.push(passport.__set__('db', dbMock));
     passportCallback = (passport.__get__('passportCallback'));
-
+    deserializeUser = (passport.__get__('deserializeUser'));
   });
 
   after(() => {
@@ -116,5 +117,54 @@ describe('Passport authentication', () => {
 
   });
 
+  describe('deserializeUser', () => {
 
+    it('passes error if user find errors', function() {
+      const name = 'test_name';
+      let doneSpy = sinon.spy();
+      userFindStub.withArgs({name: name}).yields(new Error('test'), [1]);
+
+      deserializeUser(name, doneSpy);
+
+      expect(doneSpy).to.be.calledWith(new Error('Could not deserialise user'));
+    });
+
+    it('errors if user cannot be found', function() {
+      const name = 'test_name';
+      let doneSpy = sinon.spy();
+      userFindStub.withArgs({name: name}).yields(null, []);
+
+      deserializeUser(name, doneSpy);
+
+      expect(doneSpy).to.be.calledWith(new Error('Could not deserialise user'));
+    });
+
+    it('passes error through if user load errors when passed an id', function() {
+      const name = 'test_name';
+      let doneSpy = sinon.spy();
+      const id = 1;
+      const testError = new Error('test');
+
+      userFindStub.withArgs({name: name}).yields(null, [id, 2]);
+      userLoadStub.withArgs(id).yields(testError);
+
+      deserializeUser(name, doneSpy);
+
+      expect(doneSpy).to.be.calledWith(testError);
+    });
+
+    it('passes error through on successful load', function() {
+      const name = 'test_name';
+      let doneSpy = sinon.spy();
+      const id = 1;
+      const testError = new Error('test');
+
+      userFindStub.withArgs({name: name}).yields(null, [id, 2]);
+      userLoadStub.withArgs(id).yields(null, {});
+
+      deserializeUser(name, doneSpy);
+
+      expect(doneSpy).to.be.calledWith(null, user);
+    });
+  });
 });

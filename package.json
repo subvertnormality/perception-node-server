@@ -33,7 +33,7 @@
     "test": "mocha test --recursive",
     "build-dev": "(node util/local-ip.js > ip.tmp) && docker-compose -f docker-compose-dev.yml build",
     "dev": "(node util/local-ip.js > ip.tmp) && docker-compose -f docker-compose-dev.yml up",
-    "build-prod": "docker-compose build",
+    "build-prod": "npm test && docker-compose build",
     "prod": "docker-compose up"
   },
   "author": "Andrew Hillel",
