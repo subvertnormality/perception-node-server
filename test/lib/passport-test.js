@@ -17,6 +17,7 @@ describe('Passport authentication', () => {
   let user;
   let userFindStub;
   let userSaveSpy;
+  let userLoadStub;
   let dbMock;
   let profileMock;
   let passportCallback;
@@ -39,6 +40,7 @@ describe('Passport authentication', () => {
     
     userFindStub = sinon.stub(user, 'find');
     userSaveSpy = sinon.spy(user, 'save');
+    userLoadStub = sinon.stub(user, 'load');
     dbMock.factory.returns(user);
     
     resetRewires.push(passport.__set__('db', dbMock));
@@ -58,6 +60,52 @@ describe('Passport authentication', () => {
       let doneSpy = sinon.spy();
 
       userFindStub.withArgs({name: 'test_name'}).yields(new Error('error'));
+
+      passportCallback('', '', profileMock, doneSpy);
+
+      expect(userSaveSpy).to.have.been.called;
+      expect(doneSpy).to.have.been.calledWith(null, user);
+
+    });
+
+    it('when finding user returns no ids, updates blank user with twitch info and save', () => {
+
+      let doneSpy = sinon.spy();
+
+      userFindStub.withArgs({name: 'test_name'}).yields(null, []);
+
+      passportCallback('', '', profileMock, doneSpy);
+
+      expect(userSaveSpy).to.have.been.called;
+      expect(doneSpy).to.have.been.calledWith(null, user);
+
+    });
+
+    it('when finding user returns an ids but nothing exists in the DB, update blank user with twitch info and save', () => {
+
+      let doneSpy = sinon.spy();
+      const id = '1';
+
+      userFindStub.withArgs({name: 'test_name'}).yields(null, [id]);
+      userLoadStub.withArgs(id).yields(new Error('test'));
+
+      passportCallback('', '', profileMock, doneSpy);
+
+      expect(userSaveSpy).to.have.been.called;
+      expect(doneSpy).to.have.been.calledWith(null, user);
+
+    });
+
+    it('when finding user returns an existing user, update user with latest twitch info and latest custom data and save', () => {
+
+      let doneSpy = sinon.spy();
+      const id = '1';
+      const properties = {
+        plays: 11
+      };
+
+      userFindStub.withArgs({name: 'test_name'}).yields(null, [id]);
+      userLoadStub.withArgs(id).yields(null, properties);
 
       passportCallback('', '', profileMock, doneSpy);
 
