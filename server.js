@@ -8,6 +8,7 @@ const io = require('socket.io')(http);
 const initIo = require('./lib/io');
 const routes = require('./lib/routes');
 const passport = require('./lib/passport');
+const redis = require('./redis');
 
 const STORE_SECRET = 'Fjnewvi!£wei2847!jfaefb38DJFB09W';
 
@@ -23,16 +24,19 @@ const sessionSettings = {
     store:       redisStore
 };
 
-app.use(express.static('public'))
-app.use(expressCookieParser());
-app.use(expressSession(sessionSettings));
-app.use(passport.initialize());
-app.use(passport.session());
+redis.on('ready', () => {
+  app.use(express.static('public'))
+  app.use(expressCookieParser());
+  app.use(expressSession(sessionSettings));
+  app.use(passport.initialize());
+  app.use(passport.session());
 
-routes(app, passport);
+  routes(app, passport);
 
-initIo(io, sessionSettings);
+  initIo(io, sessionSettings);
 
-http.listen(3000, function () {
-  console.log('Listening on port 3000')
+  http.listen(3000, function () {
+    console.log('Listening on port 3000')
+  });
+
 });

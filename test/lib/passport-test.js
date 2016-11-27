@@ -8,6 +8,7 @@ const expect = chai.expect;
 const rewire = require('rewire');
 const passport = rewire(appRoot + '/lib/passport');
 const db = require(appRoot + '/lib/db');
+const redis = require('ioredis');
 const _ = require('lodash');
 
 chai.use(sinonChai);
@@ -16,14 +17,15 @@ describe('Passport authentication', () => {
   const resetRewires = [];
   let user;
   let userFindStub;
-  let userSaveSpy;
+  let userSaveStub;
   let userLoadStub;
   let dbMock;
   let profileMock;
   let passportCallback;
   let deserializeUser;
 
-  before(() => {
+  beforeEach((done) => {
+
     dbMock = {
       factory: sinon.stub()
     };
@@ -40,16 +42,19 @@ describe('Passport authentication', () => {
     }
     
     userFindStub = sinon.stub(user, 'find');
-    userSaveSpy = sinon.spy(user, 'save');
+    userSaveStub = sinon.stub(user, 'save');
     userLoadStub = sinon.stub(user, 'load');
     dbMock.factory.returns(user);
     
     resetRewires.push(passport.__set__('db', dbMock));
     passportCallback = (passport.__get__('passportCallback'));
     deserializeUser = (passport.__get__('deserializeUser'));
+
+    redis.createClient('6379', 'redis').flushdb(done);
+    
   });
 
-  after(() => {
+  afterEach(() => {
     _.each(resetRewires, _.attempt);
     user.save.restore();
   });
@@ -61,10 +66,10 @@ describe('Passport authentication', () => {
       let doneSpy = sinon.spy();
 
       userFindStub.withArgs({name: 'test_name'}).yields(new Error('error'));
-
+      
       passportCallback('', '', profileMock, doneSpy);
 
-      expect(userSaveSpy).to.have.been.called;
+      userSaveStub.yields();
       expect(doneSpy).to.have.been.calledWith(null, user);
 
     });
@@ -77,7 +82,7 @@ describe('Passport authentication', () => {
 
       passportCallback('', '', profileMock, doneSpy);
 
-      expect(userSaveSpy).to.have.been.called;
+      userSaveStub.yields();
       expect(doneSpy).to.have.been.calledWith(null, user);
 
     });
@@ -92,7 +97,7 @@ describe('Passport authentication', () => {
 
       passportCallback('', '', profileMock, doneSpy);
 
-      expect(userSaveSpy).to.have.been.called;
+      userSaveStub.yields();
       expect(doneSpy).to.have.been.calledWith(null, user);
 
     });
@@ -110,7 +115,7 @@ describe('Passport authentication', () => {
 
       passportCallback('', '', profileMock, doneSpy);
 
-      expect(userSaveSpy).to.have.been.called;
+      userSaveStub.yields();
       expect(doneSpy).to.have.been.calledWith(null, user);
 
     });

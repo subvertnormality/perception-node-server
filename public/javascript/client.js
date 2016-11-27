@@ -1,4 +1,23 @@
-var socket = io('/');
+
+
+var socket;
+
+function connect() {
+  socket = io('/', {
+      'reconnection': true,
+      'reconnectionDelay': 1000,
+      'reconnectionDelayMax' : 5000,
+      'reconnectionAttempts': Infinity
+  });
+
+  socket.on('disconnect', function () {
+    window.setTimeout( 'connect()', 1000 );
+  });
+}
+
+connect();
+
+
 
 function handleKeyActivity(e, keyDown) {
   var keyCode = (e.keyCode ? e.keyCode : e.which);
