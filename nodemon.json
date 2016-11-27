@@ -1,0 +1,8 @@
+{
+  "verbose": true,
+  "exec": "npm test && node server.js --debug",
+  "watch": [
+    "test/*",
+    "lib/*"
+  ]
+}
