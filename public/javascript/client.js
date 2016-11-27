@@ -1,4 +1,25 @@
-var socket = io('/');
+
+
+var socket;
+
+function connect() {
+  socket = io('/', {
+      'reconnection': true,
+      'reconnectionDelay': 1000,
+      'reconnectionDelayMax' : 5000,
+      'reconnectionAttempts': Infinity
+  });
+
+  socket.on('disconnect', function () {
+    window.setTimeout( 'connect()', 1000 );
+  });
+
+  setupCozmoStream();
+}
+
+connect();
+
+
 
 function handleKeyActivity(e, keyDown) {
   var keyCode = (e.keyCode ? e.keyCode : e.which);
@@ -13,6 +34,7 @@ function handleKeyActivity(e, keyDown) {
 }
 
 function updateImage() {
+  console.log('emitting image update')
   socket.emit(
     'handle_image_refresh_event',
     {}
@@ -69,7 +91,7 @@ function setupCozmoStream() {
   img.src = 'assets/placeholder.png';
 
   socket.on('return_image', function (image) {
-
+    console.log('GOT RETURN IMAGE')
     var bytes = new Uint8Array(image);
 
     img.src = 'data:image/png;base64,' + encode(bytes);
@@ -77,7 +99,7 @@ function setupCozmoStream() {
   });
 }
 
-setupCozmoStream();
+
 
 document.addEventListener('keydown', function (e) { handleKeyActivity(e, true) });
 document.addEventListener('keyup', function (e) { handleKeyActivity(e, false) });

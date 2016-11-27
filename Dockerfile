@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /usr/perception
 ADD package.json package.json
-RUN npm install
+RUN npm install --production
 ADD . .
 CMD ["npm","start"]
 EXPOSE 3000

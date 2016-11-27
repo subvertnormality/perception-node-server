@@ -6,8 +6,9 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /usr/perception
 ADD package.json package.json
+ENV NODE_ENV=dev
 RUN npm install
-RUN npm install -g nodemon
+RUN npm install -g nodemon mocha
 ADD . .
-CMD ["nodemon", "--debug", "-L"]
+ENTRYPOINT nodemon -L
 EXPOSE 3000

@@ -14,6 +14,7 @@ services:
             - ADDR=http://127.0.0.1:3000/
         volumes:
             - ./lib:/usr/perception/lib
+            - ./test:/usr/perception/test
             - ./public:/usr/perception/public
             - ./ip.tmp:/usr/perception/ip.tmp
     redis:
