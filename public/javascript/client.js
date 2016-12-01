@@ -1,6 +1,7 @@
 
 
 var socket;
+var halt = false;
 
 function connect() {
   socket = io('/', {
@@ -11,13 +12,20 @@ function connect() {
   });
 
   socket.on('disconnect', function () {
-    window.setTimeout( 'connect()', 1000 );
+    if (!halt) {
+      reconnectTimeout = window.setTimeout( 'connect()', 1000 );
+    }
   });
 
+  socket.on('halt', function () {
+    halt = true;
+  });
+  
   setupCozmoStream();
 }
 
 connect();
+
 
 
 
