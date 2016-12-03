@@ -7,7 +7,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const initIo = require('./lib/io');
 const routes = require('./lib/routes');
-const passport = require('./lib/passport');
+const passport = require('./lib/passport').passport;
 const redis = require('./lib/redis');
 
 const STORE_SECRET = 'Fjnewvi!£wei2847!jfaefb38DJFB09W';

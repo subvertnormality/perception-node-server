@@ -1,34 +1,3 @@
-
-
-var socket;
-var halt = false;
-
-function connect() {
-  socket = io('/', {
-      'reconnection': true,
-      'reconnectionDelay': 1000,
-      'reconnectionDelayMax' : 5000,
-      'reconnectionAttempts': Infinity
-  });
-
-  socket.on('disconnect', function () {
-    if (!halt) {
-      reconnectTimeout = window.setTimeout( 'connect()', 1000 );
-    }
-  });
-
-  socket.on('halt', function () {
-    halt = true;
-  });
-  
-  setupCozmoStream();
-}
-
-connect();
-
-
-
-
 function handleKeyActivity(e, keyDown) {
   var keyCode = (e.keyCode ? e.keyCode : e.which);
   var hasShift = (e.shiftKey ? 1 : 0)
@@ -42,7 +11,6 @@ function handleKeyActivity(e, keyDown) {
 }
 
 function updateImage() {
-  console.log('emitting image update')
   socket.emit(
     'handle_image_refresh_event',
     {}
@@ -99,7 +67,6 @@ function setupCozmoStream() {
   img.src = 'assets/placeholder.png';
 
   socket.on('return_image', function (image) {
-    console.log('GOT RETURN IMAGE')
     var bytes = new Uint8Array(image);
 
     img.src = 'data:image/png;base64,' + encode(bytes);
@@ -107,9 +74,74 @@ function setupCozmoStream() {
   });
 }
 
+(function() {
+  var httpRequest;
+  var canvas = document.getElementById('cozmoStream');
 
+  function makeRequest(url) {
+    httpRequest = new XMLHttpRequest();
+
+    if (!httpRequest) {
+      return false;
+    }
+    httpRequest.onreadystatechange = updateContent;
+    httpRequest.open('GET', url);
+    httpRequest.send();
+  }
+
+  function updateContent() {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+      if (httpRequest.status === 200) {
+        console.log(httpRequest)
+        if (!httpRequest.response) {
+          return;
+        }
+        var response = JSON.parse(httpRequest.response);
+        console.log(response)
+        var text = '';
+        if (response.minutesLeftInQueue === false) {
+          text = 'up!';
+        } else {
+          text = 'in the queue. Approximately ' + response.minutesLeftInQueue + ' minutes left.';
+        }
+
+        document.getElementById('queueStatus').innerHTML = "You're " + text;
+      }
+    }
+  }
+
+  window.setInterval(() => { makeRequest('/queue/minutesleft') }, 3000);
+})();
+
+
+var socket;
+var halt = false;
+var imageRedrawInterval;
+
+function connect() {
+  socket = io('/', {
+      'reconnection': true,
+      'reconnectionDelay': 3000,
+      'reconnectionDelayMax' : 10000,
+      'reconnectionAttempts': Infinity
+  });
+
+  socket.on('disconnect', function () {
+    window.clearInterval(imageRedrawInterval);
+    if (!halt) {
+      reconnectTimeout = window.setTimeout( 'connect()', 3000 );
+    }
+  });
+
+  socket.on('halt', function () {
+    halt = true;
+  });
+  
+  setupCozmoStream();
+  imageRedrawInterval = setInterval(updateImage, 60);
+}
+
+connect();
 
 document.addEventListener('keydown', function (e) { handleKeyActivity(e, true) });
 document.addEventListener('keyup', function (e) { handleKeyActivity(e, false) });
-
-setInterval(updateImage, 60);

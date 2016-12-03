@@ -69,7 +69,7 @@ describe('Queue', () => {
           expect(job.data.userId).to.equal(user.id);
         });
       });
-    }).timeout(5000);;
+    }).timeout(5000);
 
   });
 
