@@ -1,3 +1,6 @@
+var socket;
+var connect;
+
 function handleKeyActivity(e, keyDown) {
   var keyCode = (e.keyCode ? e.keyCode : e.which);
   var hasShift = (e.shiftKey ? 1 : 0)
@@ -92,12 +95,12 @@ function setupCozmoStream() {
   function updateContent() {
     if (httpRequest.readyState === XMLHttpRequest.DONE) {
       if (httpRequest.status === 200) {
-        console.log(httpRequest)
+
         if (!httpRequest.response) {
           return;
         }
         var response = JSON.parse(httpRequest.response);
-        console.log(response)
+
         var text = '';
         if (response.minutesLeftInQueue === false) {
           text = 'up!';
@@ -113,35 +116,36 @@ function setupCozmoStream() {
   window.setInterval(() => { makeRequest('/queue/minutesleft') }, 3000);
 })();
 
+(function() {
 
-var socket;
-var halt = false;
-var imageRedrawInterval;
+  var halt = false;
+  var imageRedrawInterval;
 
-function connect() {
-  socket = io('/', {
-      'reconnection': true,
-      'reconnectionDelay': 3000,
-      'reconnectionDelayMax' : 10000,
-      'reconnectionAttempts': Infinity
-  });
+  connect = function connect() {
+    socket = io('/', {
+        'reconnection': true,
+        'reconnectionDelay': 3000,
+        'reconnectionDelayMax' : 10000,
+        'reconnectionAttempts': Infinity
+    });
 
-  socket.on('disconnect', function () {
-    window.clearInterval(imageRedrawInterval);
-    if (!halt) {
-      reconnectTimeout = window.setTimeout( 'connect()', 3000 );
-    }
-  });
+    socket.on('disconnect', function () {
+      window.clearInterval(imageRedrawInterval);
+      if (!halt) {
+        reconnectTimeout = window.setTimeout( 'connect()', 3000 );
+      }
+    });
 
-  socket.on('halt', function () {
-    halt = true;
-  });
-  
-  setupCozmoStream();
-  imageRedrawInterval = setInterval(updateImage, 60);
-}
+    socket.on('halt', function () {
+      halt = true;
+    });
+    
+    setupCozmoStream();
+    imageRedrawInterval = setInterval(updateImage, 60);
+  }
 
-connect();
+  connect();
 
-document.addEventListener('keydown', function (e) { handleKeyActivity(e, true) });
-document.addEventListener('keyup', function (e) { handleKeyActivity(e, false) });
+  document.addEventListener('keydown', function (e) { handleKeyActivity(e, true) });
+  document.addEventListener('keyup', function (e) { handleKeyActivity(e, false) });
+})();
