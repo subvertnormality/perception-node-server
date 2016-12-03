@@ -1,6 +1,6 @@
 {
   "verbose": true,
-  "exec": "npm test && node server.js --debug",
+  "exec": "npm test && webpack && node server.js --debug",
   "watch": [
     "test/*",
     "lib/*"

@@ -1,151 +1,248 @@
-var socket;
-var connect;
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
 
-function handleKeyActivity(e, keyDown) {
-  var keyCode = (e.keyCode ? e.keyCode : e.which);
-  var hasShift = (e.shiftKey ? 1 : 0)
-  var hasCtrl = (e.ctrlKey ? 1 : 0)
-  var hasAlt = (e.altKey ? 1 : 0)
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
 
-  socket.emit(
-    'handle_key_event',
-    { 'key_code': keyCode, 'is_shift_down': hasShift, 'is_ctrl_down': hasCtrl, 'is_alt_down': hasAlt, 'is_key_down': keyDown }
-  );
-}
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
 
-function updateImage() {
-  socket.emit(
-    'handle_image_refresh_event',
-    {}
-  );
-}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
 
-function encode(input) {
-  var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-  var output = "";
-  var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-  var i = 0;
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 
-  while (i < input.length) {
-    chr1 = input[i++];
-    chr2 = i < input.length ? input[i++] : Number.NaN; // Not sure if the index 
-    chr3 = i < input.length ? input[i++] : Number.NaN; // checks are needed here
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
 
-    enc1 = chr1 >> 2;
-    enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-    enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-    enc4 = chr3 & 63;
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
 
-    if (isNaN(chr2)) {
-      enc3 = enc4 = 64;
-    } else if (isNaN(chr3)) {
-      enc4 = 64;
-    }
-    output += keyStr.charAt(enc1) + keyStr.charAt(enc2) +
-      keyStr.charAt(enc3) + keyStr.charAt(enc4);
-  }
-  return output;
-}
 
-function handleTextInput(textField) {
-  event.stopPropagation();
-  if (event.keyCode == 13) {
-    textEntered = textField.value
-    socket.emit(
-      'handle_say_text_event',
-      { text: textEntered }
-    );
-  }
-}
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
 
-function setupCozmoStream() {
-  var canvas = document.getElementById('cozmoStream');
-  var context = canvas.getContext('2d');
-  var img = new Image();
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
 
-  img.onload = function () {
-    context.drawImage(this, 0, 0, 640, 480);
-  }
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
 
-  img.src = 'assets/placeholder.png';
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
 
-  socket.on('return_image', function (image) {
-    var bytes = new Uint8Array(image);
+	'use strict';
 
-    img.src = 'data:image/png;base64,' + encode(bytes);
+	var input = __webpack_require__(1);
+	var queueStatus = __webpack_require__(4)();
 
-  });
-}
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
 
-(function() {
-  var httpRequest;
-  var canvas = document.getElementById('cozmoStream');
+	'use strict';
 
-  function makeRequest(url) {
-    httpRequest = new XMLHttpRequest();
+	var socket = __webpack_require__(2);
 
-    if (!httpRequest) {
-      return false;
-    }
-    httpRequest.onreadystatechange = updateContent;
-    httpRequest.open('GET', url);
-    httpRequest.send();
-  }
+	function handleKeyActivity(e, keyDown) {
+	  var keyCode = e.keyCode ? e.keyCode : e.which;
+	  var hasShift = e.shiftKey ? 1 : 0;
+	  var hasCtrl = e.ctrlKey ? 1 : 0;
+	  var hasAlt = e.altKey ? 1 : 0;
 
-  function updateContent() {
-    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-      if (httpRequest.status === 200) {
+	  socket.emit('handle_key_event', { 'key_code': keyCode, 'is_shift_down': hasShift, 'is_ctrl_down': hasCtrl, 'is_alt_down': hasAlt, 'is_key_down': keyDown });
+	}
 
-        if (!httpRequest.response) {
-          return;
-        }
-        var response = JSON.parse(httpRequest.response);
+	document.addEventListener('keydown', function (e) {
+	  handleKeyActivity(e, true);
+	});
+	document.addEventListener('keyup', function (e) {
+	  handleKeyActivity(e, false);
+	});
 
-        var text = '';
-        if (response.minutesLeftInQueue === false) {
-          text = 'up!';
-        } else {
-          text = 'in the queue. Approximately ' + response.minutesLeftInQueue + ' minutes left.';
-        }
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
 
-        document.getElementById('queueStatus').innerHTML = "You're " + text;
-      }
-    }
-  }
+	'use strict';
 
-  window.setInterval(() => { makeRequest('/queue/minutesleft') }, 3000);
-})();
+	var setupCozmoStream = __webpack_require__(3).setupCozmoStream;
+	var updateImage = __webpack_require__(3).updateImage;
+	var toStatic = __webpack_require__(3).toStatic;
+	var toStream = __webpack_require__(3).toStream;
 
-(function() {
+	var reconnectTimeout = void 0;
+	var socket = void 0;
+	var imageRedrawInterval = void 0;
+	var halt = false;
 
-  var halt = false;
-  var imageRedrawInterval;
+	function connect() {
 
-  connect = function connect() {
-    socket = io('/', {
-        'reconnection': true,
-        'reconnectionDelay': 3000,
-        'reconnectionDelayMax' : 10000,
-        'reconnectionAttempts': Infinity
-    });
+	  socket = io('/', {
+	    'reconnection': true,
+	    'reconnectionDelay': 3000,
+	    'reconnectionDelayMax': 10000,
+	    'reconnectionAttempts': Infinity
+	  });
 
-    socket.on('disconnect', function () {
-      window.clearInterval(imageRedrawInterval);
-      if (!halt) {
-        reconnectTimeout = window.setTimeout( 'connect()', 3000 );
-      }
-    });
+	  socket.on('disconnect', function () {
+	    toStatic();
+	    window.clearInterval(imageRedrawInterval);
+	    if (!halt) {
+	      reconnectTimeout = setTimeout(function () {
+	        connect();
+	      }, 3000);
+	    }
+	  });
 
-    socket.on('halt', function () {
-      halt = true;
-    });
-    
-    setupCozmoStream();
-    imageRedrawInterval = setInterval(updateImage, 60);
-  }
+	  socket.on('connect', function () {
+	    toStream();
+	  });
 
-  connect();
+	  socket.on('halt', function () {
+	    halt = true;
+	  });
 
-  document.addEventListener('keydown', function (e) { handleKeyActivity(e, true) });
-  document.addEventListener('keyup', function (e) { handleKeyActivity(e, false) });
-})();
+	  setupCozmoStream(socket);
+	  imageRedrawInterval = setInterval(function () {
+	    updateImage(socket);
+	  }, 60);
+	}
+
+	connect();
+
+	module.exports = socket;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var canvas = document.getElementById('cozmoStream');
+	var staticStream = document.getElementById('cozmoStatic');
+
+	function updateImage(socket) {
+	  socket.emit('handle_image_refresh_event', {});
+	}
+
+	function encode(input) {
+	  var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+	  var output = "";
+	  var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+	  var i = 0;
+
+	  while (i < input.length) {
+	    chr1 = input[i++];
+	    chr2 = i < input.length ? input[i++] : Number.NaN; // Not sure if the index 
+	    chr3 = i < input.length ? input[i++] : Number.NaN; // checks are needed here
+
+	    enc1 = chr1 >> 2;
+	    enc2 = (chr1 & 3) << 4 | chr2 >> 4;
+	    enc3 = (chr2 & 15) << 2 | chr3 >> 6;
+	    enc4 = chr3 & 63;
+
+	    if (isNaN(chr2)) {
+	      enc3 = enc4 = 64;
+	    } else if (isNaN(chr3)) {
+	      enc4 = 64;
+	    }
+	    output += keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4);
+	  }
+	  return output;
+	}
+
+	function setupCozmoStream(socket) {
+	  var stream = canvas.getContext('2d');
+	  var img = new Image();
+
+	  img.onload = function () {
+	    stream.drawImage(this, 0, 0, 640, 480);
+	  };
+
+	  img.src = 'assets/placeholder.gif';
+
+	  socket.on('return_image', function (image) {
+	    var bytes = new Uint8Array(image);
+
+	    img.src = 'data:image/png;base64,' + encode(bytes);
+	  });
+	}
+
+	function toStatic() {
+	  canvas.style.display = 'none';
+	  staticStream.style.display = 'block';
+	}
+
+	function toStream() {
+	  canvas.style.display = 'block';
+	  staticStream.style.display = 'none';
+	}
+
+	module.exports.setupCozmoStream = setupCozmoStream;
+	module.exports.updateImage = updateImage;
+	module.exports.toStatic = toStatic;
+	module.exports.toStream = toStream;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	module.exports = function queueStatus() {
+	  var httpRequest = void 0;
+	  var canvas = document.getElementById('cozmoStream');
+
+	  function makeRequest(url) {
+	    httpRequest = new XMLHttpRequest();
+
+	    if (!httpRequest) {
+	      return false;
+	    }
+	    httpRequest.onreadystatechange = updateContent;
+	    httpRequest.open('GET', url);
+	    httpRequest.send();
+	  }
+
+	  function updateContent() {
+	    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+	      if (httpRequest.status === 200) {
+
+	        if (!httpRequest.response) {
+	          return;
+	        }
+	        var response = JSON.parse(httpRequest.response);
+
+	        var text = '';
+	        if (response.minutesLeftInQueue === false) {
+	          text = 'up!';
+	        } else {
+	          text = 'in the queue. Approximately ' + response.minutesLeftInQueue + ' minutes left.';
+	        }
+
+	        document.getElementById('queueStatus').innerHTML = "You're " + text;
+	      }
+	    }
+	  }
+
+	  window.setInterval(function () {
+	    makeRequest('/queue/minutesleft');
+	  }, 3000);
+	};
+
+/***/ }
+/******/ ]);

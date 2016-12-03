@@ -8,7 +8,7 @@ WORKDIR /usr/perception
 ADD package.json package.json
 ENV NODE_ENV=dev
 RUN npm install
-RUN npm install -g nodemon mocha
+RUN npm install -g nodemon mocha webpack
 ADD . .
 ENTRYPOINT nodemon -L
 EXPOSE 3000

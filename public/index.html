@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Perception</title>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
   </head>
   <body>
     You need to <a href='/auth'>log into twitch</a> before you can play.
@@ -10,12 +11,12 @@
     <p/>
     Input text and press enter whilst the text box is in focus to talk:<br/>
     Say <input type="text" name="sayText" id="sayTextId" value="" onkeydown=handleTextInput(this)>
-    <p/><p/>
+    <p/>
     <div id="queueStatus">Initialising....</div>
     
     <canvas id="cozmoStream" width="640", height="480"></canvas>
+    <img src="assets/placeholder.gif" id="cozmoStatic" width="640", height="480"></img>
     <script src='https://cdn.socket.io/socket.io-1.4.5.js'></script>
-    <script src='https://cdn.jsdelivr.net/lodash/4.16.6/lodash.min.js'></script>
     <script src="javascript/client.js"></script>
   </body>
 </html>
