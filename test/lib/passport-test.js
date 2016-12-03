@@ -1,5 +1,3 @@
-'use strict';
-
 const appRoot = require('app-root-path');
 const chai = require('chai');
 const sinon = require('sinon');
@@ -8,7 +6,7 @@ const expect = chai.expect;
 const rewire = require('rewire');
 const passport = rewire(appRoot + '/lib/passport');
 const db = require(appRoot + '/lib/db');
-const redis = require('ioredis');
+const redis = require(appRoot + '/lib/redis');
 const _ = require('lodash');
 
 chai.use(sinonChai);
@@ -50,7 +48,7 @@ describe('Passport authentication', () => {
     passportCallback = (passport.__get__('passportCallback'));
     deserializeUser = (passport.__get__('deserializeUser'));
 
-    redis.createClient('6379', 'redis').flushdb(done);
+    redis.flushdb(done);
     
   });
 

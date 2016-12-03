@@ -8,9 +8,8 @@ const expect = chai.expect;
 const rewire = require('rewire');
 const queue = rewire(appRoot + '/lib/queue');
 const db = require(appRoot + '/lib/db');
-const redis = require('ioredis');
+const redis = require(appRoot + '/lib/redis');
 const _ = require('lodash');
-const PriorityQueue = require('bull/lib/priority-queue');
 
 chai.use(sinonChai);
 
@@ -30,12 +29,12 @@ describe('Queue', () => {
   }
  
   before((done) => {
-    redis.createClient('6379', 'redis').flushdb(done);
+    redis.flushdb(done);
   });
 
   afterEach((done) => {
     _.each(resetRewires, _.attempt);
-    redis.createClient('6379', 'redis').flushdb(() => {
+    redis.flushdb(() => {
       queue.__set__('currentlyPlayingUserId', '');    
       userQueue.empty().then(() => {
         done();

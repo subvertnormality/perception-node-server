@@ -8,23 +8,24 @@ const io = require('socket.io')(http);
 const initIo = require('./lib/io');
 const routes = require('./lib/routes');
 const passport = require('./lib/passport');
-const redis = require('./redis');
+const redis = require('./lib/redis');
 
 const STORE_SECRET = 'Fjnewvi!£wei2847!jfaefb38DJFB09W';
 
-const redisStore = new RedisStore({
-  host: 'redis',
-  port: '6379'
-});
-
-const sessionSettings = {
-    cookieParser: expressCookieParser,
-    key:         'connect.sid',
-    secret:      STORE_SECRET,
-    store:       redisStore
-};
-
 redis.on('ready', () => {
+
+  const redisStore = new RedisStore({
+    client: redis
+  });
+
+  const sessionSettings = {
+      cookieParser: expressCookieParser,
+      key:         'perception.sid',
+      secret:      STORE_SECRET,
+      store:       redisStore,
+  };
+
+
   app.use(express.static('public'))
   app.use(expressCookieParser());
   app.use(expressSession(sessionSettings));
