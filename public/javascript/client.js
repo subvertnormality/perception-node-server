@@ -56,15 +56,27 @@
 	'use strict';
 
 	var socket = __webpack_require__(2);
+	var textInput = document.getElementById('sayTextId');
 
 	function handleKeyActivity(e, keyDown) {
 	  var keyCode = e.keyCode ? e.keyCode : e.which;
 	  var hasShift = e.shiftKey ? 1 : 0;
 	  var hasCtrl = e.ctrlKey ? 1 : 0;
 	  var hasAlt = e.altKey ? 1 : 0;
-
+	  console.log(socket);
 	  socket.emit('handle_key_event', { 'key_code': keyCode, 'is_shift_down': hasShift, 'is_ctrl_down': hasCtrl, 'is_alt_down': hasAlt, 'is_key_down': keyDown });
 	}
+
+	function handleTextInput(toSay) {
+	  socket.emit('handle_say_text_event', { text: toSay });
+	}
+
+	function handleTextKeyDown(event) {
+	  event.stopPropagation();
+	  if (event.keyCode === 13) {
+	    handleTextInput(textInput.value);
+	  }
+	};
 
 	document.addEventListener('keydown', function (e) {
 	  handleKeyActivity(e, true);
@@ -72,6 +84,8 @@
 	document.addEventListener('keyup', function (e) {
 	  handleKeyActivity(e, false);
 	});
+
+	textInput.onkeydown = handleTextKeyDown;
 
 /***/ },
 /* 2 */
@@ -85,31 +99,33 @@
 	var toStream = __webpack_require__(3).toStream;
 
 	var reconnectTimeout = void 0;
-	var socket = void 0;
 	var imageRedrawInterval = void 0;
 	var halt = false;
 
-	function connect() {
+	var socket = io('/', {
+	  'reconnection': true,
+	  'reconnectionDelay': 3000,
+	  'reconnectionDelayMax': 10000,
+	  'reconnectionAttempts': Infinity
+	});
 
-	  socket = io('/', {
-	    'reconnection': true,
-	    'reconnectionDelay': 3000,
-	    'reconnectionDelayMax': 10000,
-	    'reconnectionAttempts': Infinity
-	  });
+	function connect() {
 
 	  socket.on('disconnect', function () {
 	    toStatic();
 	    window.clearInterval(imageRedrawInterval);
 	    if (!halt) {
 	      reconnectTimeout = setTimeout(function () {
-	        connect();
+	        socket.connect();
 	      }, 3000);
 	    }
 	  });
 
 	  socket.on('connect', function () {
 	    toStream();
+	    imageRedrawInterval = setInterval(function () {
+	      updateImage(socket);
+	    }, 60);
 	  });
 
 	  socket.on('halt', function () {
@@ -117,9 +133,10 @@
 	  });
 
 	  setupCozmoStream(socket);
-	  imageRedrawInterval = setInterval(function () {
-	    updateImage(socket);
-	  }, 60);
+
+	  window.onresize = function () {
+	    setupCozmoStream(socket);
+	  };
 	}
 
 	connect();
@@ -166,11 +183,19 @@
 	}
 
 	function setupCozmoStream(socket) {
+
+	  canvas.width = window.innerWidth;
+	  canvas.height = window.innerHeight;
+	  staticStream.width = window.innerWidth;
+	  staticStream.height = window.innerHeight;
+
 	  var stream = canvas.getContext('2d');
+	  stream.filter = 'sepia(70)';
+
 	  var img = new Image();
 
 	  img.onload = function () {
-	    stream.drawImage(this, 0, 0, 640, 480);
+	    stream.drawImage(this, 0, 0, canvas.width, canvas.height);
 	  };
 
 	  img.src = 'assets/placeholder.gif';
@@ -231,17 +256,17 @@
 	        if (response.minutesLeftInQueue === false) {
 	          text = 'up!';
 	        } else {
-	          text = 'in the queue. Approximately ' + response.minutesLeftInQueue + ' minutes left.';
+	          text = 'in the queue. Approximately ' + response.minutesLeftInQueue + ' minute(s) left.';
 	        }
 
-	        document.getElementById('queueStatus').innerHTML = "You're " + text;
+	        document.getElementById('queueStatus').innerHTML = "<span>You're " + text + "</span>";
 	      }
 	    }
 	  }
 
 	  window.setInterval(function () {
 	    makeRequest('/queue/minutesleft');
-	  }, 3000);
+	  }, 2000);
 	};
 
 /***/ }

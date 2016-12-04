@@ -5,17 +5,14 @@
     <link rel="stylesheet" type="text/css" href="css/styles.css">
   </head>
   <body>
-    You need to <a href='/auth'>log into twitch</a> before you can play.
-    <p/>
-    WASD to move. R and F to move arms up and down. T and G to move head up and down. Hold shift to go faster.
-    <p/>
-    Input text and press enter whilst the text box is in focus to talk:<br/>
-    Say <input type="text" name="sayText" id="sayTextId" value="" onkeydown=handleTextInput(this)>
-    <p/>
-    <div id="queueStatus">Initialising....</div>
-    
-    <canvas id="cozmoStream" width="640", height="480"></canvas>
-    <img src="assets/placeholder.gif" id="cozmoStatic" width="640", height="480"></img>
+    <div class="hud">
+      <span>You need to <a href='/auth'>log into twitch</a> before you can play.</span>
+      <br/><span>WASD to move. R and F to move arms up and down. T and G to move head up and down. Hold shift to go faster.</span>
+      <br/><span>Say:</span> <input type="text" name="sayText" id="sayTextId" value="">
+      <br/><div id="queueStatus"><span>Initialising....<span></div>
+    </div>
+    <canvas class="cozmoStream" id="cozmoStream" width="100%", height="100%"></canvas>
+    <img src="assets/placeholder.gif" id="cozmoStatic" width="100%", height="100%"></img>
     <script src='https://cdn.socket.io/socket.io-1.4.5.js'></script>
     <script src="javascript/client.js"></script>
   </body>

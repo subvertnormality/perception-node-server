@@ -1,3 +1,40 @@
-#cozmoStream {
+html, body {
+  margin: 0; height: 100%; overflow: hidden
+}
+
+body {
+  background-image: url('../assets/placeholder.gif');
+  background-color:#f4d9a9;
+  background-size: 100% 100%;
+  color: #35d650;
+  font-family: Consolas, monaco, monospace;
+	font-size: 16px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 24px;
+  margin: 0px;
+}
+
+span {
+  background-color: #000;
+  height: 20px;
+  padding: 1px 5px 2px 5px;
+  opacity: 0.8;
+}
+
+a {
+  text-decoration: inherit;
+  color: #768976;
+}
+
+.cozmoStream {
   display: none;
+}
+
+.hud {
+  display: block;
+  padding: 24px;
+  position: absolute;
+  z-index: 10;
 }
