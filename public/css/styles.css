@@ -54,8 +54,28 @@ a {
 
 }
 
-.controls { 
-  display: none;
+.controlsLeft { 
+  padding: 24px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+.controlsLeft .keysBottomRow .f { 
+  margin-left: 20px;
+}
+
+
+.controlsLeft .keysTopRow .r {
+  margin-left: 20px;
+}
+
+.controlsLeft .keysBottomRow .shift {
+  margin-left: 10px;
+}
+
+.controlsRight { 
   padding: 24px;
   position: absolute;
   right: 0;
@@ -63,13 +83,9 @@ a {
   z-index: 10;
 }
 
-.controls .keysTopRow { 
-  margin-left: 100px;
-  margin-bottom: 0;
-}
-
-.controls .keysTopRowSecondSet {
+.controlsRight .keysTopRow { 
   margin-left: 40px;
+  margin-bottom: 0;
 }
 
 .user .logo {
@@ -272,7 +288,7 @@ a {
 .keyboard-key.return::before {
   position: absolute;
   bottom: 5px;
-  right: 5px;
+  left: 5px;
   font-size: 10px;
   content: "return";
 }
@@ -287,8 +303,4 @@ a {
   left: 5px;
   font-size: 10px;
   content: "shift";
-}
-
-.keyboard-key.r {
-  margin-left: 50px;
 }
