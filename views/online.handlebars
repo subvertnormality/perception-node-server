@@ -1,0 +1,26 @@
+<div class="hud">
+  <div id="queueStatus"><span class="consoleText">Initialising....<span></div>
+  <br/><div id="commandPrompt"></div>
+</div>
+<div class="user" id="userHud">
+</div>
+<div class="controls" id="controls">
+  <div class="keysTopRow">
+    <icon class="keyboard-key w dark"></icon>
+    <icon class="keyboard-key r dark"></icon>
+    <icon class="keyboard-key t dark"></icon>
+  </div>
+  <div class="keysBottomRow">
+    <icon class="keyboard-key shift dark"></icon>
+    <icon class="keyboard-key a dark"></icon>
+    <icon class="keyboard-key s dark"></icon>
+    <icon class="keyboard-key d dark"></icon>
+    <icon class="keyboard-key f dark"></icon>
+    <icon class="keyboard-key g dark"></icon>
+    <icon class="keyboard-key return dark"></icon>
+  </div>
+</div>
+<canvas class="cozmoStream" id="cozmoStream" width="100%", height="100%"></canvas>
+<img src="assets/placeholder.gif" id="cozmoStatic" width="100%", height="100%"></img>
+<script src='https://cdn.socket.io/socket.io-1.4.5.js'></script>
+<script src="javascript/client.js"></script>

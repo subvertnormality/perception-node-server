@@ -9,6 +9,7 @@ const initIo = require('./lib/io');
 const routes = require('./lib/routes');
 const passport = require('./lib/passport').passport;
 const redis = require('./lib/redis');
+const expressHbs  = require('express-handlebars');
 
 const STORE_SECRET = 'Fjnewvi!£wei2847!jfaefb38DJFB09W';
 
@@ -25,7 +26,8 @@ redis.on('ready', () => {
       store:       redisStore,
   };
 
-
+  app.engine('handlebars', expressHbs({defaultLayout: 'main'}));
+  app.set('view engine', 'handlebars');
   app.use(express.static('public'))
   app.use(expressCookieParser());
   app.use(expressSession(sessionSettings));
