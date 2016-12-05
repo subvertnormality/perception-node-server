@@ -5,13 +5,13 @@ services:
             context: .
             dockerfile: Dockerfile.dev
         ports:
-            - "3000:3000"
+            - "3000"
         links:
             - redis
         restart: always
         environment:
             - ENV=dev
-            - ADDR=http://127.0.0.1:3000/
+            - ADDR=http://127.0.0.1/
         volumes:
             - ./lib:/usr/perception/lib
             - ./views:/usr/perception/views
@@ -22,3 +22,9 @@ services:
         image: redis
         ports:
             - "6379"
+    nginx:
+        build: ./nginx
+        ports:
+            - "80:80"
+        links:
+            - "web:web"

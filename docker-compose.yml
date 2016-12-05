@@ -3,7 +3,7 @@ services:
     web:
         build: .
         ports:
-            - "80:3000"
+            - "3000"
         links:
             - redis
         restart: always
@@ -15,3 +15,9 @@ services:
         image: redis
         ports:
             - "6379"
+    nginx:
+        build: ./nginx
+        ports:
+            - "80:80"
+        links:
+            - "web:web"
