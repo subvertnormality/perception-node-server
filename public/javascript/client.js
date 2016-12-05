@@ -47,8 +47,9 @@
 	'use strict';
 
 	var input = __webpack_require__(1);
-	var hud = __webpack_require__(6)();
-	__webpack_require__(8);
+	var hud = __webpack_require__(7)();
+	__webpack_require__(9);
+	__webpack_require__(4);
 
 /***/ },
 /* 1 */
@@ -58,7 +59,7 @@
 
 	var socket = __webpack_require__(2);
 	var textInput = document.getElementById('sayTextId');
-	var _ = __webpack_require__(4);
+	var _ = __webpack_require__(5);
 	var commandInputModeStatus = false;
 	var cursorInterval = void 0;
 	var textToSay = '';
@@ -143,6 +144,7 @@
 	var updateImage = __webpack_require__(3).updateImage;
 	var toStatic = __webpack_require__(3).toStatic;
 	var toStream = __webpack_require__(3).toStream;
+	var _ = __webpack_require__(5);
 
 	var reconnectTimeout = void 0;
 	var imageRedrawInterval = void 0;
@@ -157,9 +159,12 @@
 
 	function connect() {
 
+	  toStatic();
+
 	  socket.on('disconnect', function () {
-	    toStatic();
-	    window.clearInterval(imageRedrawInterval);
+	    clearInterval(imageRedrawInterval);
+	    setTimeout(toStatic, 200);
+
 	    if (!halt) {
 	      reconnectTimeout = setTimeout(function () {
 	        socket.connect();
@@ -168,7 +173,6 @@
 	  });
 
 	  socket.on('connect', function () {
-	    toStream();
 	    imageRedrawInterval = setInterval(function () {
 	      updateImage(socket);
 	    }, 60);
@@ -180,9 +184,9 @@
 
 	  setupCozmoStream(socket);
 
-	  window.onresize = function () {
+	  window.addEventListener('resize', _.throttle(function () {
 	    setupCozmoStream(socket);
-	  };
+	  }, 100));
 	}
 
 	connect();
@@ -191,12 +195,16 @@
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var canvas = document.getElementById('cozmoStream');
-	var staticStream = document.getElementById('cozmoStatic');
+	var cozmoStream = document.getElementById('cozmoStream');
+	var staticStream = document.getElementById('static');
+	var startStatic = __webpack_require__(4).startStatic;
+	var stopStatic = __webpack_require__(4).stopStatic;
+	var staticIsActive = __webpack_require__(4).isActive;
+	var _ = __webpack_require__(5);
 
 	function updateImage(socket) {
 	  socket.emit('handle_image_refresh_event', {});
@@ -230,37 +238,48 @@
 
 	function setupCozmoStream(socket) {
 
-	  canvas.width = window.innerWidth;
-	  canvas.height = window.innerHeight;
-	  staticStream.width = window.innerWidth;
-	  staticStream.height = window.innerHeight;
+	  var toStreamThrottled = _.throttle(toStream, 1000);
 
-	  var stream = canvas.getContext('2d');
+	  if (!staticIsActive) {
+	    if (!isActive()) {
+	      toStatic();
+	    }
+	    return false;
+	  }
+
+	  cozmoStream.width = window.innerWidth;
+	  cozmoStream.height = window.innerHeight;
+
+	  var stream = cozmoStream.getContext('2d');
 	  stream.filter = 'brightness(160%)';
 
 	  var img = new Image();
 
 	  img.onload = function () {
-	    stream.drawImage(this, 0, 0, canvas.width, canvas.height);
+	    stream.drawImage(this, 0, 0, cozmoStream.width, cozmoStream.height);
 	  };
-
-	  img.src = 'assets/placeholder.gif';
 
 	  socket.on('return_image', function (image) {
 	    var bytes = new Uint8Array(image);
-
 	    img.src = 'data:image/png;base64,' + encode(bytes);
+	    toStreamThrottled();
 	  });
 	}
 
 	function toStatic() {
-	  canvas.style.display = 'none';
+	  if (cozmoStream) {
+	    cozmoStream.style.display = 'none';
+	  }
 	  staticStream.style.display = 'block';
+	  startStatic();
 	}
 
 	function toStream() {
-	  canvas.style.display = 'block';
+	  if (cozmoStream) {
+	    cozmoStream.style.display = 'block';
+	  }
 	  staticStream.style.display = 'none';
+	  stopStatic();
 	}
 
 	module.exports.setupCozmoStream = setupCozmoStream;
@@ -270,6 +289,78 @@
 
 /***/ },
 /* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var stat = document.getElementById('static');
+	var ctx = stat.getContext('2d');
+	var _ = __webpack_require__(5);
+
+	var intervalLoop = void 0;
+
+	stat.width = stat.height = 256;
+
+	var resize = _.throttle(function resize() {
+
+	  stat.style.width = window.innerWidth + 'px';
+	  stat.style.height = window.innerHeight + 'px';
+	}, 100);
+
+	resize();
+
+	window.addEventListener('resize', resize);
+
+	var noise = _.throttle(function noise(ctx) {
+
+	  var w = ctx.canvas.width,
+	      h = ctx.canvas.height,
+	      idata = ctx.createImageData(w, h),
+	      buffer32 = new Uint32Array(idata.data.buffer),
+	      len = buffer32.length,
+	      run = 0,
+	      color = 0,
+	      m = Math.random() * 6 + 4,
+	      band = Math.random() * 256 * 256,
+	      p = 0,
+	      i = 0;
+
+	  for (; i < len;) {
+	    if (run < 0) {
+	      run = m * Math.random();
+	      p = Math.pow(Math.random(), 0.4);
+	      if (i > band && i < band + 48 * 256) {
+	        p = Math.random();
+	      }
+	      color = 255 * p << 24;
+	    }
+	    run -= 1;
+	    buffer32[i++] = color;
+	  }
+
+	  ctx.putImageData(idata, 0, 0);
+	}, 100);
+
+	function startStatic() {
+	  intervalLoop = setInterval(function () {
+	    noise(ctx);
+	  }, 100);
+	}
+
+	function stopStatic() {
+	  clearInterval(intervalLoop);
+	}
+
+	function isActive() {
+	  return intervalLoop ? true : false;
+	}
+
+	module.exports.startStatic = startStatic;
+	module.exports.stopStatic = stopStatic;
+	module.exports.isActive = isActive;
+
+/***/ },
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global, module) {/**
@@ -17338,10 +17429,10 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(5)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(6)(module)))
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -17357,16 +17448,21 @@
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(4);
-	var request = __webpack_require__(7);
+	var _ = __webpack_require__(5);
+	var request = __webpack_require__(8);
 
 	module.exports = function hud() {
 	  var canvas = document.getElementById('cozmoStream');
+
+	  if (!canvas) {
+	    return false;
+	  }
+
 	  var currentlyPlayingUser = 'Another user';
 
 	  function updateHud(httpRequest) {
@@ -17384,7 +17480,7 @@
 
 	        text = '';
 	        if (!response.minutesLeftInQueue) {
-	          text = 'Connection established. Awaiting command...';
+	          text = 'Connection established.';
 	          document.getElementById('controls').style.display = 'block';
 	        } else {
 	          updateCurrentPlayer();
@@ -17444,7 +17540,7 @@
 	};
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -17471,7 +17567,7 @@
 	};
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	'use strict';
