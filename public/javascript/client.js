@@ -163,7 +163,8 @@
 
 	  socket.on('disconnect', function () {
 	    clearInterval(imageRedrawInterval);
-	    setTimeout(toStatic, 200);
+
+	    toStatic();
 
 	    if (!halt) {
 	      reconnectTimeout = setTimeout(function () {
@@ -239,6 +240,7 @@
 	function setupCozmoStream(socket) {
 
 	  var toStreamThrottled = _.throttle(toStream, 1000);
+	  var lastBytes = void 0;
 
 	  if (!staticIsActive) {
 	    if (!isActive()) {
@@ -262,7 +264,12 @@
 	  socket.on('return_image', function (image) {
 	    var bytes = new Uint8Array(image);
 	    img.src = 'data:image/png;base64,' + encode(bytes);
-	    toStreamThrottled();
+
+	    if (lastBytes !== bytes) {
+	      toStreamThrottled();
+	    }
+
+	    lastBytes = bytes;
 	  });
 	}
 
