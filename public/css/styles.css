@@ -73,12 +73,12 @@ a {
 }
 
 .controlsLeft .keysBottomRow .f { 
-  margin-left: 20px;
+  margin-left: 15px;
 }
 
 
 .controlsLeft .keysTopRow .r {
-  margin-left: 20px;
+  margin-left: 10px;
 }
 
 .controlsLeft .keysBottomRow .shift {
@@ -141,6 +141,7 @@ a {
 }
 
 .keyboard-key.dark {
+  border: none;
   color: #0fc127;
   background: #222;
   box-shadow: inset 0 0 25px #111, 0 1px 0 #000, 0 2px 0 #222, 0 2px 3px #333;
@@ -301,16 +302,4 @@ a {
   left: 5px;
   font-size: 10px;
   content: "return";
-}
-
-.keyboard-key.shift {
-  width: 52px;
-}
-
-.keyboard-key.shift::before {
-  position: absolute;
-  bottom: 5px;
-  left: 5px;
-  font-size: 10px;
-  content: "shift";
 }

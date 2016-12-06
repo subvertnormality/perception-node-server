@@ -11,7 +11,7 @@ services:
         restart: always
         environment:
             - ENV=dev
-            - ADDR=http://127.0.0.1/
+            - ADDR=https://127.0.0.1/
         volumes:
             - ./lib:/usr/perception/lib
             - ./views:/usr/perception/views
@@ -31,4 +31,4 @@ services:
         environment:
             STAGE: 'local'
             WEBSOCKET: 'true'
-            DOMAINS: 'localhost -> http://web:3000'
+            DOMAINS: '127.0.0.1 -> http://web:3000'

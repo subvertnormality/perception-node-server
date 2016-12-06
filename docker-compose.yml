@@ -9,7 +9,7 @@ services:
         restart: always
         environment:
             - ENV=prod
-            - ADDR=http://www.playperception.com/
+            - ADDR=https://www.playperception.com/
             - RPC_ADDR=1.tcp.eu.ngrok.io:20187
     redis:
         image: redis
