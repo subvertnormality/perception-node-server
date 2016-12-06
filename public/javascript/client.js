@@ -49,6 +49,7 @@
 	var input = __webpack_require__(1);
 	var hud = __webpack_require__(7)();
 	__webpack_require__(9);
+	__webpack_require__(10)();
 	__webpack_require__(4);
 
 /***/ },
@@ -125,6 +126,11 @@
 
 	function handleTextInput(toSay) {
 	  socket.emit('handle_say_text_event', { text: _.lowerCase(_.deburr(toSay)) });
+	  if ('speechSynthesis' in window) {
+	    var msg = new SpeechSynthesisUtterance(toSay);
+	    msg.pitch = 2;
+	    window.speechSynthesis.speak(msg);
+	  }
 	}
 
 	document.addEventListener('keydown', function (e) {
@@ -14512,7 +14518,7 @@
 	     * @returns {string} Returns the deburred string.
 	     * @example
 	     *
-	     * _.deburr('déjà vu');
+	     * _.deburr('dÃ©jÃ  vu');
 	     * // => 'deja vu'
 	     */
 	    function deburr(string) {
@@ -17627,6 +17633,72 @@
 	    if (charEl.length) return [].slice.call(charEl);
 	  }
 	}
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var Podium = {};
+	Podium.keydown = function (k, type) {
+	  var oEvent = document.createEvent('KeyboardEvent');
+
+	  Object.defineProperty(oEvent, 'keyCode', {
+	    get: function get() {
+	      return this.keyCodeVal;
+	    }
+	  });
+	  Object.defineProperty(oEvent, 'which', {
+	    get: function get() {
+	      return this.keyCodeVal;
+	    }
+	  });
+
+	  if (oEvent.initKeyboardEvent) {
+	    oEvent.initKeyboardEvent(type, true, true, document.defaultView, false, false, false, false, k, k);
+	  } else {
+	    oEvent.initKeyEvent(type, true, true, document.defaultView, false, false, false, false, k, 0);
+	  }
+
+	  oEvent.keyCodeVal = k;
+
+	  if (oEvent.keyCode !== k) {
+	    alert("keyCode mismatch " + oEvent.keyCode + "(" + oEvent.which + ")");
+	  }
+
+	  document.dispatchEvent(oEvent);
+	};
+
+	function addKeyEventsToKey(keyId, keyCode) {
+	  var wKey = document.getElementById(keyId);
+	  wKey.onmousedown = function () {
+	    return Podium.keydown(keyCode, 'keydown');
+	  };
+	  wKey.touchstart = function () {
+	    return Podium.keydown(keyCode, 'keydown');
+	  };
+	  wKey.onmouseup = function () {
+	    return Podium.keydown(keyCode, 'keyup');
+	  };
+	  wKey.touchend = function () {
+	    return Podium.keydown(keyCode, 'keyup');
+	  };
+	}
+
+	function attachEvents() {
+	  addKeyEventsToKey('wKey', 87);
+	  addKeyEventsToKey('aKey', 65);
+	  addKeyEventsToKey('sKey', 83);
+	  addKeyEventsToKey('dKey', 68);
+	  addKeyEventsToKey('rKey', 82);
+	  addKeyEventsToKey('fKey', 70);
+	  addKeyEventsToKey('tKey', 84);
+	  addKeyEventsToKey('gKey', 71);
+	  addKeyEventsToKey('returnKey', 13);
+	}
+
+	module.exports = attachEvents;
 
 /***/ }
 /******/ ]);
