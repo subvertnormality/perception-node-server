@@ -239,6 +239,10 @@
 
 	function setupCozmoStream(socket) {
 
+	  if (!cozmoStream) {
+	    return false;
+	  }
+
 	  var toStreamThrottled = _.throttle(toStream, 1000);
 	  var lastBytes = void 0;
 
