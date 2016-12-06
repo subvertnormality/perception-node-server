@@ -3,7 +3,7 @@ services:
     web:
         build: .
         ports:
-            - "3000"
+            - "3000:80"
         links:
             - redis
         restart: always
@@ -15,9 +15,17 @@ services:
         image: redis
         ports:
             - "6379"
-    nginx:
-        build: ./nginx
+    https-portal:
+        image: steveltn/https-portal
         ports:
-            - "80:80"
+            - '80:80'
+            - '443:443'
         links:
-            - "web:web"
+            - web
+        restart: always
+        environment:
+            STAGE: 'local'
+            WEBSOCKET: 'true'
+            DOMAINS: 'www.playperception.com -> http://web:3000'
+            STAGE: 'production'
+            FORCE_RENEW: 'true'
