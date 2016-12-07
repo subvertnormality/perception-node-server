@@ -46,10 +46,8 @@
 
 	'use strict';
 
-	var input = __webpack_require__(1);
-	var hud = __webpack_require__(7)();
-	__webpack_require__(9);
-	__webpack_require__(10)();
+	__webpack_require__(1).initialiseInput();
+	__webpack_require__(7).beginUpdatingHud();
 	__webpack_require__(4);
 
 /***/ },
@@ -60,10 +58,22 @@
 
 	var socket = __webpack_require__(2);
 	var textInput = document.getElementById('sayTextId');
+	var hud = __webpack_require__(7);
 	var _ = __webpack_require__(5);
+
+	// TODO: State here, nasty.
 	var commandInputModeStatus = false;
-	var cursorInterval = void 0;
 	var textToSay = '';
+
+	function updateTextToSay(e, textToSayContainer) {
+	  if (e.keyCode === 8) {
+	    textToSay = textToSay.substring(0, textToSay.length - 1);
+	  } else if (e.keyCode !== 13) {
+	    textToSay += String.fromCharCode(e.keyCode);
+	  }
+
+	  textToSayContainer.innerText = textToSay;
+	}
 
 	function handleKeyActivity(e, keyDown) {
 	  var keyCode = e.keyCode ? e.keyCode : e.which;
@@ -76,32 +86,13 @@
 	  }
 
 	  if (commandInputModeStatus && e.type === 'keydown') {
-
 	    var textToSayContainer = document.getElementById('textToSay');
 	    if (textToSayContainer) {
-	      if (e.keyCode === 8) {
-	        textToSay = textToSay.substring(0, textToSay.length - 1);
-	      } else if (e.keyCode !== 13) {
-	        textToSay += String.fromCharCode(e.keyCode);
-	      }
-
-	      textToSayContainer.innerText = textToSay;
+	      updateTextToSay(e, textToSayContainer);
 	    }
 	  } else {
 	    socket.emit('handle_key_event', { 'key_code': keyCode, 'is_shift_down': hasShift, 'is_ctrl_down': hasCtrl, 'is_alt_down': hasAlt, 'is_key_down': keyDown });
 	  }
-	}
-
-	function activateCursor() {
-	  var cursor = document.getElementById('cursor');
-
-	  cursorInterval = setInterval(function () {
-	    cursor.innerText === '_' ? cursor.innerText = ' ' : cursor.innerText = '_';
-	  }, 500);
-	}
-
-	function deactivateCursor() {
-	  clearInterval(cursorInterval);
 	}
 
 	var commandInputMode = _.throttle(function commandInputMode() {
@@ -112,7 +103,7 @@
 
 	    var commandPrompt = document.getElementById('commandPrompt');
 	    commandPrompt.innerHTML = '<span class="consoleText" id="say">Say></span><span class="consoleText" id="textToSay"></span><span class="consoleText" id="cursor"></span>';
-	    activateCursor();
+	    hud.activateCursorBlink();
 	  } else {
 	    var _commandPrompt = document.getElementById('commandPrompt');
 	    while (_commandPrompt.hasChildNodes()) {
@@ -120,7 +111,7 @@
 	    }
 	    handleTextInput(textToSay);
 	    textToSay = '';
-	    deactivateCursor();
+	    hud.deactivateCursorBlink();
 	  }
 	}, 500);
 
@@ -133,12 +124,21 @@
 	  }
 	}
 
-	document.addEventListener('keydown', function (e) {
-	  handleKeyActivity(e, true);
-	});
-	document.addEventListener('keyup', function (e) {
-	  handleKeyActivity(e, false);
-	});
+	function inCommandMode() {
+	  return commandInputModeStatus;
+	}
+
+	function initialiseInput() {
+	  document.addEventListener('keydown', function (e) {
+	    handleKeyActivity(e, true);
+	  });
+	  document.addEventListener('keyup', function (e) {
+	    handleKeyActivity(e, false);
+	  });
+	}
+
+	module.exports.initialiseInput = initialiseInput;
+	module.exports.inCommandMode = inCommandMode;
 
 /***/ },
 /* 2 */
@@ -263,7 +263,6 @@
 	  cozmoStream.height = window.innerHeight;
 
 	  var stream = cozmoStream.getContext('2d');
-	  stream.filter = 'brightness(160%)';
 
 	  var img = new Image();
 
@@ -14518,7 +14517,7 @@
 	     * @returns {string} Returns the deburred string.
 	     * @example
 	     *
-	     * _.deburr('dÃ©jÃ  vu');
+	     * _.deburr('déjà vu');
 	     * // => 'deja vu'
 	     */
 	    function deburr(string) {
@@ -17472,89 +17471,116 @@
 
 	var _ = __webpack_require__(5);
 	var request = __webpack_require__(8);
+	var enableGuiControls = __webpack_require__(9).enableGuiControls;
+	var disableGuiControls = __webpack_require__(9).disableGuiControls;
 
-	module.exports = function hud() {
-	  var canvas = document.getElementById('cozmoStream');
+	var stream = document.getElementById('cozmoStream');
+	var queueStatus = document.getElementById('queueStatus');
+	var userHud = document.getElementById('userHud');
 
-	  if (!canvas) {
-	    return false;
-	  }
+	var cursorInterval = void 0;
 
-	  var currentlyPlayingUser = 'Another user';
+	function updateHud(httpRequest) {
 
-	  function updateHud(httpRequest) {
+	  if (httpRequest.readyState === XMLHttpRequest.DONE) {
+	    if (httpRequest.status === 200 && httpRequest.response) {
 
-	    var text = 'Error. Credentials unknown. Cannot establish connection.';
-	    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-	      if (httpRequest.status === 200) {
+	      var response = JSON.parse(httpRequest.response);
 
-	        if (!httpRequest.response) {
-	          return;
-	        }
-	        var response = JSON.parse(httpRequest.response);
-
-	        updateUserHud(response);
-
-	        text = '';
-	        if (!response.minutesLeftInQueue) {
-	          text = 'Connection established.';
-	          document.getElementById('controls').style.display = 'block';
-	        } else {
-	          updateCurrentPlayer();
-	          document.getElementById('controls').style.display = 'none';
-	          text = currentlyPlayingUser + ' is in control.</span><br/><span class="consoleText">You are in the queue. Approximately ' + response.minutesLeftInQueue + ' minute(s) remaining.</span>';
-	        }
-	      } else {
-	        updateUserHud(false);
-	        document.getElementById('controls').style.display = 'none';
-	      }
-
-	      document.getElementById('queueStatus').innerHTML = "<span class='consoleText'>" + text + "</span>";
-	    }
-	  }
-
-	  function updateCurrentlyPlayingContent(httpRequest) {
-
-	    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-
-	      if (!httpRequest.response || httpRequest.status !== 200) {
+	      if (!response) {
 	        return;
 	      }
 
-	      var user = JSON.parse(httpRequest.response);
-
-	      if (user.displayName) {
-	        currentlyPlayingUser = user.displayName + ' (' + user.plays + ' plays)';
-	      } else {
-	        currentlyPlayingUser = 'Another user';
-	      }
+	      throttledUpdateUserHud(response);
+	      updateQueueStatus(response);
+	      return;
+	    } else {
+	      throttledUpdateUserHud(false);
+	      return;
 	    }
 	  }
 
-	  var updateUserHud = _.throttle(function updateUserHud(userQueueDetails) {
-	    var userHud = document.getElementById('userHud');
-	    var userHudHtml = void 0;
-	    if (!userQueueDetails) {
-	      userHudHtml = "<a href='/auth'><img src='assets/connect_dark.png' alt='Login with Twitch' /></a>";
-	    } else {
-	      var logo = userQueueDetails.userLogo ? userQueueDetails.userLogo : 'assets/anon.png';
-	      userHudHtml = "<img src='" + logo + "' class='logo'><br/>" + "<span class='consoleText'>" + userQueueDetails.userDisplayName + "</span>";
+	  return;
+	}
+
+	function getCurrentlyPlayingContent(httpRequest) {
+
+	  var defaultPlayingUserText = 'Another user';
+
+	  if (httpRequest.readyState === XMLHttpRequest.DONE) {
+
+	    if (!httpRequest.response || httpRequest.status !== 200) {
+	      return defaultPlayingUserText;
 	    }
-	    userHud.innerHTML = userHudHtml;
-	  }, 20000);
 
-	  var updateCurrentPlayer = _.throttle(function updateCurrentPlayer() {
-	    request('/queue/currentlyplaying', updateCurrentlyPlayingContent);
-	  }, 20000);
+	    var user = JSON.parse(httpRequest.response);
 
-	  var updateQueue = _.throttle(function updateQueue() {
-	    request('/queue/user', updateHud);
-	  }, 2000);
+	    if (user.displayName) {
+	      return user.displayName + ' (' + user.plays + ' plays)';
+	    }
 
-	  window.setInterval(function () {
-	    updateQueue();
-	  }, 2000);
+	    return defaultPlayingUserText;
+	  }
+	}
+
+	function updateQueueStatus(userQueueDetails) {
+
+	  if (!userQueueDetails.minutesLeftInQueue) {
+	    queueStatus.innerHTML = '<span class="consoleText">Connection established.</span>';
+	    enableGuiControls();
+	  } else {
+	    throttledUpdateCurrentPlayer(function (httpRequest) {
+	      queueStatus.innerHTML = '<span class="consoleText">' + getCurrentlyPlayingContent(httpRequest) + ' is in control.</span><br/><span class="consoleText">You are in the queue. Approximately ' + userQueueDetails.minutesLeftInQueue + ' minute(s) remaining.</span>';
+	    });
+	    disableGuiControls();
+	  }
 	};
+
+	function activateCursorBlink() {
+	  var cursor = document.getElementById('cursor');
+	  cursorInterval = setInterval(function () {
+	    cursor.innerText === '_' ? cursor.innerText = ' ' : cursor.innerText = '_';
+	  }, 500);
+	}
+
+	function deactivateCursorBlink() {
+	  clearInterval(cursorInterval);
+	}
+
+	var throttledUpdateUserHud = _.throttle(function updateUserHud(userQueueDetails) {
+
+	  var userHudHtml = void 0;
+	  if (!userQueueDetails) {
+	    queueStatus.innerHTML = '<span class="consoleText">Error. Credentials unknown. Cannot establish connection.<span class="consoleText">';
+	    userHudHtml = "<a href='/auth'><img src='assets/connect_dark.png' alt='Login with Twitch' /></a>";
+	  } else {
+	    var logo = userQueueDetails.userLogo ? userQueueDetails.userLogo : 'assets/anon.png';
+	    userHudHtml = '<img src="' + logo + '" class="logo"><br/>' + '<span class="consoleText">' + userQueueDetails.userDisplayName + '</span>';
+	  }
+	  userHud.innerHTML = userHudHtml;
+	}, 20000);
+
+	var throttledUpdateCurrentPlayer = _.throttle(function throttledUpdateCurrentPlayer(callback) {
+	  request('/queue/currentlyplaying', callback);
+	}, 20000);
+
+	var throttledUpdateHud = _.throttle(function throttledUpdateHud() {
+	  request('/queue/user', updateHud);
+	}, 2000);
+
+	function beginUpdatingHud() {
+	  if (!userHud) {
+	    return false;
+	  }
+	  window.setInterval(function () {
+	    throttledUpdateHud();
+	  }, 2000);
+	}
+
+	module.exports.updateQueue;
+	module.exports.beginUpdatingHud = beginUpdatingHud;
+	module.exports.activateCursorBlink = activateCursorBlink;
+	module.exports.deactivateCursorBlink = deactivateCursorBlink;
 
 /***/ },
 /* 8 */
@@ -17585,62 +17611,26 @@
 
 /***/ },
 /* 9 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	window.addEventListener('keydown', classy('add', 'keyboard-keydown'));
-	window.addEventListener('keyup', classy('remove', 'keyboard-keydown'));
-
-	function classy(method, className) {
-	  return function (e) {
-	    var els = getKeyEl(e);
-	    if (els) {
-	      while (els.length) {
-	        els.pop().classList[method](className);
-	      }
-	    }
-	  };
-	}
+	var input = __webpack_require__(1);
 
 	var keyMap = {
-	  8: 'delete',
-	  9: 'tab',
-	  13: 'return',
-	  16: 'shift',
-	  17: 'ctrl',
-	  18: 'alt, .keyboard-key.option',
-	  27: 'esc',
-	  32: 'space',
-	  91: 'cmd',
-	  37: 'left',
-	  38: 'up',
-	  39: 'right',
-	  40: 'down'
+	  wKey: 87,
+	  aKey: 65,
+	  sKey: 83,
+	  dKey: 68,
+	  rKey: 82,
+	  fKey: 70,
+	  tKey: 84,
+	  gKey: 71,
+	  returnKey: 13
 	};
 
-	function getKeyEl(e) {
-	  var char = String.fromCharCode(e.which);
-	  if (e.which >= 112 && e.which < 112 + 12) {
-	    char = 'f' + (e.which - 111);
-	  } else if (keyMap[e.which]) {
-	    char = keyMap[e.which];
-	  } else if (/\d/.test(char)) {
-	    char = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'][Number(char)];
-	  }
-	  if (char) {
-	    var charEl = document.querySelectorAll('.keyboard-key.' + char.toLowerCase());
-	    if (charEl.length) return [].slice.call(charEl);
-	  }
-	}
-
-/***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-	'use strict';
-
 	var Podium = {};
+
 	Podium.keydown = function (k, type) {
 	  var oEvent = document.createEvent('KeyboardEvent');
 
@@ -17667,11 +17657,39 @@
 	    alert("keyCode mismatch " + oEvent.keyCode + "(" + oEvent.which + ")");
 	  }
 
-	  document.dispatchEvent(oEvent);
+	  if (!input.inCommandMode()) {
+	    document.dispatchEvent(oEvent);
+	  }
 	};
 
-	function addKeyEventsToKey(keyId, keyCode) {
+	function doClassManipulation(method, className) {
+	  return function (e) {
+
+	    var els = getKeyEl(e);
+	    if (els) {
+	      while (els.length) {
+	        els.pop().classList[method](className);
+	      }
+	    }
+	  };
+	}
+
+	function getKeyEl(e) {
+
+	  var char = e.key;
+
+	  if (char) {
+	    var charEl = document.querySelectorAll('.keyboard-key.' + char.toLowerCase());
+	    if (charEl.length) return [].slice.call(charEl);
+	  }
+	}
+
+	function addKeyEventsToButton(keyId, keyCode) {
 	  var wKey = document.getElementById(keyId);
+	  if (!wKey) {
+	    return false;
+	  }
+
 	  wKey.onmousedown = function () {
 	    return Podium.keydown(keyCode, 'keydown');
 	  };
@@ -17687,18 +17705,35 @@
 	}
 
 	function attachEvents() {
-	  addKeyEventsToKey('wKey', 87);
-	  addKeyEventsToKey('aKey', 65);
-	  addKeyEventsToKey('sKey', 83);
-	  addKeyEventsToKey('dKey', 68);
-	  addKeyEventsToKey('rKey', 82);
-	  addKeyEventsToKey('fKey', 70);
-	  addKeyEventsToKey('tKey', 84);
-	  addKeyEventsToKey('gKey', 71);
-	  addKeyEventsToKey('returnKey', 13);
+	  _.forEach(keyMap, function (value, key) {
+	    return addKeyEventsToButton(key, value);
+	  });
+	  window.addEventListener('keydown', function (e) {
+	    if (!input.inCommandMode()) {
+	      doClassManipulation('add', 'keyboard-keydown')(e);
+	    }
+	  });
+	  window.addEventListener('keyup', function (e) {
+	    if (!input.inCommandMode()) {
+	      doClassManipulation('remove', 'keyboard-keydown')(e);
+	    }
+	  });
 	}
 
-	module.exports = attachEvents;
+	function enableGuiControls() {
+	  if (document.getElementById('controls').style.display !== 'block') {
+	    document.getElementById('controls').style.display = 'block';
+	  }
+	}
+
+	function disableGuiControls() {
+	  document.getElementById('controls').style.display = 'none';
+	}
+
+	attachEvents();
+
+	module.exports.enableGuiControls = enableGuiControls;
+	module.exports.disableGuiControls = disableGuiControls;
 
 /***/ }
 /******/ ]);
