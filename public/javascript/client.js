@@ -150,6 +150,8 @@
 	var updateImage = __webpack_require__(3).updateImage;
 	var toStatic = __webpack_require__(3).toStatic;
 	var toStream = __webpack_require__(3).toStream;
+	var requestAndUpdateHud = __webpack_require__(7).requestAndUpdateHud;
+
 	var _ = __webpack_require__(5);
 
 	var reconnectTimeout = void 0;
@@ -165,11 +167,13 @@
 
 	function connect() {
 
+	  requestAndUpdateHud();
 	  toStatic();
 
 	  socket.on('disconnect', function () {
-	    clearInterval(imageRedrawInterval);
 
+	    clearInterval(imageRedrawInterval);
+	    requestAndUpdateHud();
 	    toStatic();
 
 	    if (!halt) {
@@ -183,9 +187,13 @@
 	    imageRedrawInterval = setInterval(function () {
 	      updateImage(socket);
 	    }, 60);
+	    requestAndUpdateHud();
+	    toStream();
 	  });
 
 	  socket.on('halt', function () {
+	    requestAndUpdateHud();
+	    toStatic();
 	    halt = true;
 	  });
 
@@ -212,6 +220,8 @@
 	var stopStatic = __webpack_require__(4).stopStatic;
 	var staticIsActive = __webpack_require__(4).isActive;
 	var _ = __webpack_require__(5);
+
+	var noUpdateCount = 0;
 
 	function updateImage(socket) {
 	  socket.emit('handle_image_refresh_event', {});
@@ -253,9 +263,7 @@
 	  var lastBytes = void 0;
 
 	  if (!staticIsActive) {
-	    if (!isActive()) {
-	      toStatic();
-	    }
+	    toStatic();
 	    return false;
 	  }
 
@@ -273,10 +281,6 @@
 	  socket.on('return_image', function (image) {
 	    var bytes = new Uint8Array(image);
 	    img.src = 'data:image/png;base64,' + encode(bytes);
-
-	    if (lastBytes !== bytes) {
-	      toStreamThrottled();
-	    }
 
 	    lastBytes = bytes;
 	  });
@@ -17479,6 +17483,7 @@
 	var userHud = document.getElementById('userHud');
 
 	var cursorInterval = void 0;
+	var currentlyPlayingUserData = void 0;
 
 	function updateHud(httpRequest) {
 
@@ -17491,11 +17496,19 @@
 	        return;
 	      }
 
-	      throttledUpdateUserHud(response);
+	      if (response.systemStatus === false) {
+	        error();
+	        window.location = '/';
+	      }
+
+	      updateUserHud(response);
 	      updateQueueStatus(response);
 	      return;
+	    } else if (httpRequest.status >= 400 && httpRequest.status < 500) {
+	      updateUserHud(false);
+	      return;
 	    } else {
-	      throttledUpdateUserHud(false);
+	      error();
 	      return;
 	    }
 	  }
@@ -17503,9 +17516,7 @@
 	  return;
 	}
 
-	function getCurrentlyPlayingContent(httpRequest) {
-
-	  var defaultPlayingUserText = 'Another user';
+	function updateCurrentlyPlayingUserData(httpRequest) {
 
 	  if (httpRequest.readyState === XMLHttpRequest.DONE) {
 
@@ -17515,25 +17526,54 @@
 
 	    var user = JSON.parse(httpRequest.response);
 
-	    if (user.displayName) {
-	      return user.displayName + ' (' + user.plays + ' plays)';
-	    }
-
-	    return defaultPlayingUserText;
+	    currentlyPlayingUserData = user;
 	  }
+	}
+
+	function getCurrentlyPlayingContent() {
+
+	  var defaultPlayingUserText = 'Another user';
+
+	  var user = currentlyPlayingUserData;
+
+	  if (user && user.displayName) {
+	    return user.displayName + ' (' + user.plays + ' plays)';
+	  }
+
+	  return defaultPlayingUserText;
+	}
+
+	function error() {
+	  queueStatus.innerHTML = '<span class="consoleText">An error has occured.</span>';
+	  disableGuiControls();
 	}
 
 	function updateQueueStatus(userQueueDetails) {
 
-	  if (!userQueueDetails.minutesLeftInQueue) {
+	  if (userQueueDetails.minutesLeftInQueue === false) {
 	    queueStatus.innerHTML = '<span class="consoleText">Connection established.</span>';
 	    enableGuiControls();
-	  } else {
-	    throttledUpdateCurrentPlayer(function (httpRequest) {
-	      queueStatus.innerHTML = '<span class="consoleText">' + getCurrentlyPlayingContent(httpRequest) + ' is in control.</span><br/><span class="consoleText">You are in the queue. Approximately ' + userQueueDetails.minutesLeftInQueue + ' minute(s) remaining.</span>';
-	    });
+	  } else if (userQueueDetails.minutesLeftInQueue > 0) {
+
+	    queueStatus.innerHTML = '<span class="consoleText">' + getCurrentlyPlayingContent() + ' is in control.</span><br/><span class="consoleText">You are in the queue. Approximately ' + userQueueDetails.minutesLeftInQueue + ' minute(s) remaining.</span>';
+
+	    throttledUpdateCurrentPlayer(updateCurrentlyPlayingUserData);
+
 	    disableGuiControls();
 	  }
+	};
+
+	function updateUserHud(userQueueDetails) {
+
+	  var userHudHtml = void 0;
+	  if (!userQueueDetails) {
+	    queueStatus.innerHTML = '<span class="consoleText">Error. Credentials unknown. Cannot establish connection.<span class="consoleText">';
+	    userHudHtml = "<a href='/auth'><img src='assets/connect_dark.png' alt='Login with Twitch' /></a>";
+	  } else {
+	    var logo = userQueueDetails.userLogo ? userQueueDetails.userLogo : 'assets/anon.png';
+	    userHudHtml = '<img src="' + logo + '" class="logo"><br/>' + '<span class="consoleText">' + userQueueDetails.userDisplayName + '</span>';
+	  }
+	  userHud.innerHTML = userHudHtml;
 	};
 
 	function activateCursorBlink() {
@@ -17547,26 +17587,15 @@
 	  clearInterval(cursorInterval);
 	}
 
-	var throttledUpdateUserHud = _.throttle(function updateUserHud(userQueueDetails) {
-
-	  var userHudHtml = void 0;
-	  if (!userQueueDetails) {
-	    queueStatus.innerHTML = '<span class="consoleText">Error. Credentials unknown. Cannot establish connection.<span class="consoleText">';
-	    userHudHtml = "<a href='/auth'><img src='assets/connect_dark.png' alt='Login with Twitch' /></a>";
-	  } else {
-	    var logo = userQueueDetails.userLogo ? userQueueDetails.userLogo : 'assets/anon.png';
-	    userHudHtml = '<img src="' + logo + '" class="logo"><br/>' + '<span class="consoleText">' + userQueueDetails.userDisplayName + '</span>';
-	  }
-	  userHud.innerHTML = userHudHtml;
-	}, 20000);
+	function requestAndUpdateHud() {
+	  request('/queue/user', updateHud);
+	}
 
 	var throttledUpdateCurrentPlayer = _.throttle(function throttledUpdateCurrentPlayer(callback) {
 	  request('/queue/currentlyplaying', callback);
 	}, 20000);
 
-	var throttledUpdateHud = _.throttle(function throttledUpdateHud() {
-	  request('/queue/user', updateHud);
-	}, 2000);
+	var throttledUpdateHud = _.throttle(requestAndUpdateHud, 30000);
 
 	function beginUpdatingHud() {
 	  if (!userHud) {
@@ -17574,13 +17603,14 @@
 	  }
 	  window.setInterval(function () {
 	    throttledUpdateHud();
-	  }, 2000);
+	  }, 30000);
 	}
 
 	module.exports.updateQueue;
 	module.exports.beginUpdatingHud = beginUpdatingHud;
 	module.exports.activateCursorBlink = activateCursorBlink;
 	module.exports.deactivateCursorBlink = deactivateCursorBlink;
+	module.exports.requestAndUpdateHud = requestAndUpdateHud;
 
 /***/ },
 /* 8 */
