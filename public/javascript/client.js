@@ -63,17 +63,6 @@
 
 	// TODO: State here, nasty.
 	var commandInputModeStatus = false;
-	var textToSay = '';
-
-	function updateTextToSay(e, textToSayContainer) {
-	  if (e.keyCode === 8) {
-	    textToSay = textToSay.substring(0, textToSay.length - 1);
-	  } else if (e.keyCode !== 13) {
-	    textToSay += String.fromCharCode(e.keyCode);
-	  }
-
-	  textToSayContainer.innerText = textToSay;
-	}
 
 	function handleKeyActivity(e, keyDown) {
 	  var keyCode = e.keyCode ? e.keyCode : e.which;
@@ -81,38 +70,33 @@
 	  var hasAlt = e.altKey ? 1 : 0;
 
 	  if (e.keyCode === 13 && e.type === 'keydown') {
-	    commandInputMode();
+	    (function () {
+	      var commandPrompt = document.getElementById('commandPrompt');
+	      commandPrompt.addEventListener('blur', function (event) {
+	        commandPrompt.focus();
+	      });
+
+	      commandInputMode();
+	    })();
 	  }
 
-	  if (commandInputModeStatus && e.type === 'keydown') {
-	    var textToSayContainer = document.getElementById('textToSay');
-	    if (textToSayContainer) {
-	      updateTextToSay(e, textToSayContainer);
-	    }
-	  } else {
+	  if (!commandInputModeStatus) {
 	    socket.emit('handle_key_event', { 'key_code': keyCode, 'is_shift_down': 1, 'is_ctrl_down': hasCtrl, 'is_alt_down': hasAlt, 'is_key_down': keyDown });
 	  }
 	}
 
-	var commandInputMode = _.throttle(function commandInputMode() {
+	var commandInputMode = function commandInputMode() {
 
-	  commandInputModeStatus = commandInputModeStatus ? false : true;
+	  var commandContainer = document.getElementById('commandContainer');
+	  var commandPrompt = document.getElementById('commandPrompt');
 
-	  if (commandInputModeStatus) {
-
-	    var commandPrompt = document.getElementById('commandPrompt');
-	    commandPrompt.innerHTML = '<span class="consoleText" id="say">Say></span><span class="consoleText" id="textToSay"></span><span class="consoleText" id="cursor"></span>';
-	    hud.activateCursorBlink();
-	  } else {
-	    var _commandPrompt = document.getElementById('commandPrompt');
-	    while (_commandPrompt.hasChildNodes()) {
-	      _commandPrompt.removeChild(_commandPrompt.firstChild);
-	    }
-	    handleTextInput(textToSay);
-	    textToSay = '';
-	    hud.deactivateCursorBlink();
+	  if (!commandInputModeStatus) {
+	    commandPrompt.value = '';
+	    commandContainer.style.display = 'block';
+	    commandPrompt.focus();
 	  }
-	}, 500);
+	  commandInputModeStatus = commandInputModeStatus ? false : true;
+	};
 
 	function handleTextInput(toSay) {
 	  socket.emit('handle_say_text_event', { text: _.lowerCase(_.deburr(toSay)) });
@@ -128,11 +112,25 @@
 	}
 
 	function initialiseInput() {
+	  var commandPrompt = document.getElementById('commandPrompt');
+
 	  document.addEventListener('keydown', function (e) {
 	    handleKeyActivity(e, true);
 	  });
 	  document.addEventListener('keyup', function (e) {
 	    handleKeyActivity(e, false);
+	  });
+
+	  commandPrompt.addEventListener('keydown', function (event) {
+	    commandPrompt.size = commandPrompt.value.length + 1;
+	    if (event.keyCode == 13) {
+	      handleTextInput(commandPrompt.value);
+	      commandPrompt.removeEventListener('blur', function () {});
+	      commandPrompt.blur();
+	      commandPrompt.size = 1;
+	      commandContainer.style.display = 'none';
+	    }
+	    return true;
 	  });
 	}
 
@@ -166,14 +164,14 @@
 
 	function connect() {
 
-	  requestAndUpdateHud();
 	  toStatic();
+	  requestAndUpdateHud();
 
 	  socket.on('disconnect', function () {
 
+	    toStatic();
 	    clearInterval(imageRedrawInterval);
 	    requestAndUpdateHud();
-	    toStatic();
 
 	    if (!halt) {
 	      reconnectTimeout = setTimeout(function () {
@@ -191,8 +189,8 @@
 	  });
 
 	  socket.on('halt', function () {
-	    requestAndUpdateHud();
 	    toStatic();
+	    requestAndUpdateHud();
 	    halt = true;
 	  });
 
@@ -297,8 +295,8 @@
 	  if (cozmoStream) {
 	    cozmoStream.style.display = 'block';
 	  }
-	  staticStream.style.display = 'none';
 	  stopStatic();
+	  staticStream.style.display = 'none';
 	}
 
 	module.exports.setupCozmoStream = setupCozmoStream;
@@ -364,10 +362,12 @@
 	  intervalLoop = setInterval(function () {
 	    noise(ctx);
 	  }, 100);
+	  stat.style.backgroundColor = '#fff';
 	}
 
 	function stopStatic() {
 	  clearInterval(intervalLoop);
+	  stat.style.backgroundColor = '#000';
 	}
 
 	function isActive() {
@@ -17481,7 +17481,6 @@
 	var queueStatus = document.getElementById('queueStatus');
 	var userHud = document.getElementById('userHud');
 
-	var cursorInterval = void 0;
 	var currentlyPlayingUserData = void 0;
 
 	function updateHud(httpRequest) {
@@ -17575,17 +17574,6 @@
 	  userHud.innerHTML = userHudHtml;
 	};
 
-	function activateCursorBlink() {
-	  var cursor = document.getElementById('cursor');
-	  cursorInterval = setInterval(function () {
-	    cursor.innerText === '_' ? cursor.innerText = ' ' : cursor.innerText = '_';
-	  }, 500);
-	}
-
-	function deactivateCursorBlink() {
-	  clearInterval(cursorInterval);
-	}
-
 	function requestAndUpdateHud() {
 	  request('/queue/user', updateHud);
 	}
@@ -17607,8 +17595,6 @@
 
 	module.exports.updateQueue;
 	module.exports.beginUpdatingHud = beginUpdatingHud;
-	module.exports.activateCursorBlink = activateCursorBlink;
-	module.exports.deactivateCursorBlink = deactivateCursorBlink;
 	module.exports.requestAndUpdateHud = requestAndUpdateHud;
 
 /***/ },

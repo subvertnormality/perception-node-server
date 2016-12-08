@@ -3,25 +3,16 @@
 <div class="hud">
   <img src="assets/logo.svg" alt="perception" width="266" height="47"/><br/>
   <div id="queueStatus"><span class="consoleText">Initialising....<span></div>
-  <br/><div id="commandPrompt"></div>
+  <br/>  
+  <div class="commandContainer" id="commandContainer">
+    <input type="text" class="commandPrompt" id="commandPrompt" size="1"></input>
+  </div>
+
 </div>
 <div class="user" id="userHud">
 </div>
 <div id="controls">
   <div class="controlsLeft">
-    <div class="keysTopRow">
-      <button class="keyboard-key r dark" id="rKey"></button>
-      <button class="keyboard-key t dark" id="tKey"></button>
-    </div>
-    <div class="keysBottomRow">
-      <button class="keyboard-key f dark" id="fKey"></button>
-      <button class="keyboard-key g dark" id="gKey"></button>
-      <button class="keyboard-key return dark" id="returnKey"></button>
-
-    </div>
-  </div>
-
-  <div class="controlsRight">
     <div class="keysTopRow">
       <button class="keyboard-key w dark" id="wKey"></button>
     </div>
@@ -30,6 +21,17 @@
       <button class="keyboard-key s dark" id="sKey"></button>
       <button class="keyboard-key d dark" id="dKey"></button>
 
+    </div>
+  </div>
+  <div class="controlsRight">
+    <div class="keysTopRow">
+      <button class="keyboard-key r dark" id="rKey"></button>
+      <button class="keyboard-key t dark" id="tKey"></button>
+    </div>
+    <div class="keysBottomRow">
+      <button class="keyboard-key return dark" id="returnKey"></button>
+      <button class="keyboard-key f dark" id="fKey"></button>
+      <button class="keyboard-key g dark" id="gKey"></button>
     </div>
   </div>
 </div>
