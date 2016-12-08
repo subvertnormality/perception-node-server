@@ -5,7 +5,7 @@ html, body {
 }
 
 body {
-  background-color:#000;
+  background-color:#fff;
   background-size: 100% 100%;
   color: #0fc127;
   font-family: Consolas, monaco, monospace;
@@ -81,10 +81,6 @@ a {
   margin-left: 10px;
 }
 
-.controlsLeft .keysBottomRow .shift {
-  margin-left: 10px;
-}
-
 .controlsRight {
   padding: 24px;
   position: absolute;
@@ -93,9 +89,13 @@ a {
   z-index: 10;
 }
 
-.controlsRight .keysTopRow { 
-  margin-left: 40px;
-  margin-bottom: 0;
+.controlsLeft .keysTopRow { 
+  margin-bottom: 5px;
+}
+
+.controlsRight .keysTopRow {
+  margin-left: 60px;
+  margin-bottom: 5px;
 }
 
 .user .logo {
@@ -125,24 +125,27 @@ a {
   cursor: pointer;
   position: relative;
   display: inline-block;
-  color: #aaa;
-  font: bold 12px arial;
+  color: #0fc127;
+  font-family: Consolas, monaco, monospace;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 22px;
+  font-style: normal;
   text-decoration: none;
   text-align: center;
-  width: 40px;
-  height: 30px;
+  width: 60px;
+  height: 45px;
   background: #eff0f2;
   border-radius: 4px;
   border-top: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow: inset 0 0 25px #e8e8e8, 0 1px 0 #c3c3c3, 0 2px 0 #c9c9c9, 0 2px 3px #333;
   text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.8);
   margin: 0px;
-  opacity: 0.9;
+  opacity: 0.6;
 }
 
 .keyboard-key.dark {
   border: none;
-  color: #0fc127;
   background: #222;
   box-shadow: inset 0 0 25px #111, 0 1px 0 #000, 0 2px 0 #222, 0 2px 3px #333;
   text-shadow: 0px -1px 0px #000;
@@ -204,102 +207,114 @@ a {
 /* alphabet */
 .keyboard-key.w::before {
   position: absolute;
-  top: 50%;
+  top: 20%;
   margin-top: -0.5em;
   left: 0;
   right: 0;
   margin-left: auto;
   margin-right: auto;
-  content: "w";
+  content: "W //\a FORWARD";
+  white-space: pre;
 }
 
 .keyboard-key.r::before {
   position: absolute;
-  top: 50%;
+  top: 20%;
   margin-top: -0.5em;
   left: 0;
   right: 0;
   margin-left: auto;
   margin-right: auto;
-  content: "r";
+  content: "R //\aUP";
+  white-space: pre;
 }
 
 .keyboard-key.t::before {
   position: absolute;
-  top: 50%;
+  top: 20%;
   margin-top: -0.5em;
   left: 0;
   right: 0;
   margin-left: auto;
   margin-right: auto;
-  content: "t";
+  content: "T //\a PICKUP";
+  white-space: pre;
 }
 
 .keyboard-key.a::before {
   position: absolute;
-  top: 50%;
+  top: 20%;
   margin-top: -0.5em;
   left: 0;
   right: 0;
   margin-left: auto;
   margin-right: auto;
-  content: "a";
+  content: "A //\a LEFT";
+  white-space: pre;
 }
 
 .keyboard-key.s::before {
   position: absolute;
-  top: 50%;
+  top: 20%;
   margin-top: -0.5em;
   left: 0;
   right: 0;
   margin-left: auto;
   margin-right: auto;
-  content: "s";
+  content: "S //\a BACK";
+  white-space: pre;
 }
 
 .keyboard-key.d::before {
   position: absolute;
-  top: 50%;
+  top: 20%;
   margin-top: -0.5em;
   left: 0;
   right: 0;
   margin-left: auto;
   margin-right: auto;
-  content: "d";
+  content: "D //\a RIGHT";
+  white-space: pre;
 }
 
 .keyboard-key.f::before {
   position: absolute;
-  top: 50%;
+  top: 20%;
   margin-top: -0.5em;
   left: 0;
   right: 0;
   margin-left: auto;
   margin-right: auto;
-  content: "f";
+  content: "F //\a DOWN";
+  white-space: pre;
 }
 
 .keyboard-key.g::before {
   position: absolute;
-  top: 50%;
+  top: 20%;
   margin-top: -0.5em;
   left: 0;
   right: 0;
   margin-left: auto;
   margin-right: auto;
-  content: "g";
+  content: "G //\a PUTDOWN";
+  white-space: pre;
 }
 
 
 /* utility */
 .keyboard-key.return {
-  width: 52px;
+  width: 82px;
 }
 
 .keyboard-key.return::before {
   position: absolute;
-  bottom: 5px;
-  left: 5px;
-  font-size: 10px;
-  content: "return";
+  top: 20%;
+  margin-top: -0.5em;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  content: "ENTER //\aTALK";
+  white-space: pre;
 }
