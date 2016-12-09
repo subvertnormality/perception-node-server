@@ -114,6 +114,10 @@
 	function initialiseInput() {
 	  var commandPrompt = document.getElementById('commandPrompt');
 
+	  if (!commandPrompt) {
+	    return false;
+	  }
+
 	  document.addEventListener('keydown', function (e) {
 	    handleKeyActivity(e, true);
 	  });
@@ -17564,6 +17568,11 @@
 	function updateUserHud(userQueueDetails) {
 
 	  var userHudHtml = void 0;
+
+	  if (!queueStatus) {
+	    return;
+	  }
+
 	  if (!userQueueDetails) {
 	    queueStatus.innerHTML = '<span class="consoleText">Error. Credentials unknown. Cannot establish connection.<span class="consoleText">';
 	    userHudHtml = "<a href='/auth'><img src='assets/connect_dark.png' alt='Login with Twitch' /></a>";
