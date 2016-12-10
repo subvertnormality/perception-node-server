@@ -18,6 +18,21 @@ body {
   position: relative;
 }
 
+a {
+  text-decoration: inherit;
+  color: #768976;
+}
+
+.logo {
+  width: 187px;
+  height: 33px;
+}
+
+.userLogo { 
+  width: 33px;
+  height: 33px;
+}
+
 .static {
   position:fixed;
   background:#000;
@@ -55,10 +70,12 @@ body {
   opacity: 0.8;
 }
 
-a {
-  text-decoration: inherit;
-  color: #768976;
+.connectWithTwitch {
+  margin-top: 8px;
+  width: 100px;
+  height: 19px;
 }
+
 
 .cozmoStream {
   display: none;
@@ -66,9 +83,10 @@ a {
 
 .perceptionStream {
   display: none;
-  height: 450px;
-  width: 800px;
+  width: 230px;    
+  height: 129px;
   margin: auto;
+  padding-top: 40px;
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
   z-index: 10;
@@ -76,10 +94,9 @@ a {
 
 .hud {
   display: block;
-  padding: 24px;
+  padding: 12px;
   position: absolute;
   left: 0;
-  margin-right: 300px;
   top: 0;
   z-index: 10;
 }
@@ -88,7 +105,7 @@ a {
   text-align: right;
   display: block;
   margin-left: 300px;
-  padding: 24px;
+  padding: 12px;
   position: absolute;
   right: 0;
   top: 0;
@@ -122,12 +139,12 @@ a {
 }
 
 .controlsRight .keysTopRow { 
-  margin-left: 90px;
+  margin-left: 100px;
   margin-bottom: 5px;
 }
 
 .controlsLeft .keysTopRow {
-  margin-left: 60px;
+  margin-left: 70px;
   margin-bottom: 5px;
 }
 
@@ -350,4 +367,95 @@ a {
   margin-right: auto;
   content: "ENTER //\aTALK";
   white-space: pre;
+}
+
+
+/*240px, 400px, 600px, 900px, 1008px, 1280px*/
+
+@media (min-width: 240px) {
+
+  .perceptionStream {
+    width: 230px;    
+    height: 129px;
+  }
+
+}
+
+@media (min-width: 400px) {
+
+  .connectWithTwitch {
+    margin-top: 5px;
+    width: 130px;
+    height: 25px;
+  }
+
+  .cozmoStream {
+    display: none;
+  }
+
+  .perceptionStream {
+    width: 300px;
+    height: 169px;
+  }
+
+}
+
+
+@media (min-width: 600px) {
+
+  .logo {
+    width: 254px;
+    height: 45px;
+  }
+
+  .userLogo { 
+    width: 45px;
+    height: 45px;
+  }
+
+  .connectWithTwitch {
+    width: 170px;
+    height: 32px;
+  }
+
+  .hud {
+    padding: 24px;
+  }
+
+  .user {
+    padding: 24px;
+  }
+
+  .perceptionStream {
+    width: 500px;
+    height: 281px;
+  }
+
+}
+
+@media (min-width: 900px) {
+  
+  .perceptionStream {
+    width: 650px;
+    height: 367px;
+  }
+
+}
+
+@media (min-width: 1008px) {
+  
+  .perceptionStream {
+    width: 900px;
+    height: 506px;
+  }
+
+}
+
+@media (min-width: 1280px) {
+  
+  .perceptionStream {
+    width: 1200px;
+    height: 675px;
+  }
+
 }

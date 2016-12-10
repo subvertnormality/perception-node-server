@@ -17484,8 +17484,8 @@
 	'use strict';
 
 	var options = {
-	  width: 800,
-	  height: 450,
+	  width: '100%',
+	  height: '100%',
 	  channel: 'youaresee'
 	};
 
@@ -17625,10 +17625,10 @@
 
 	  if (!userQueueDetails) {
 	    queueStatus.innerHTML = '<span class="consoleText">Error. Credentials unknown. Cannot establish connection.<span class="consoleText">';
-	    userHudHtml = "<a href='/auth'><img src='assets/connect_dark.png' alt='Login with Twitch' /></a>";
+	    userHudHtml = '<a href="/auth"><img class="connectWithTwitch" src="assets/connect_dark.png" alt="Login with Twitch" /></a>';
 	  } else {
 	    var logo = userQueueDetails.userLogo ? userQueueDetails.userLogo : 'assets/anon.png';
-	    userHudHtml = '<img src="' + logo + '" class="logo"><br/>' + '<span class="consoleText">' + userQueueDetails.userDisplayName + '</span>';
+	    userHudHtml = '<img class="userLogo" src="' + logo + '" class="logo"><br/>' + '<span class="consoleText">' + userQueueDetails.userDisplayName + '</span>';
 	  }
 	  userHud.innerHTML = userHudHtml;
 	};
