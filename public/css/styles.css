@@ -15,6 +15,7 @@ body {
 	font-weight: 300;
 	line-height: 22px;
   margin: 0px;
+  position: relative;
 }
 
 .static {
@@ -61,6 +62,16 @@ a {
 
 .cozmoStream {
   display: none;
+}
+
+.perceptionStream {
+  display: none;
+  height: 450px;
+  width: 800px;
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  z-index: 10;
 }
 
 .hud {

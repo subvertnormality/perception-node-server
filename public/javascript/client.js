@@ -47,7 +47,7 @@
 	'use strict';
 
 	__webpack_require__(1).initialiseInput();
-	__webpack_require__(7).beginUpdatingHud();
+	__webpack_require__(8).beginUpdatingHud();
 	__webpack_require__(4);
 
 /***/ },
@@ -58,7 +58,7 @@
 
 	var socket = __webpack_require__(2);
 	var textInput = document.getElementById('sayTextId');
-	var hud = __webpack_require__(7);
+	var hud = __webpack_require__(8);
 	var _ = __webpack_require__(5);
 
 	// TODO: State here, nasty.
@@ -147,13 +147,13 @@
 
 	'use strict';
 
-	var setupCozmoStream = __webpack_require__(3).setupCozmoStream;
-	var updateImage = __webpack_require__(3).updateImage;
-	var toStatic = __webpack_require__(3).toStatic;
-	var toStream = __webpack_require__(3).toStream;
-	var requestAndUpdateHud = __webpack_require__(7).requestAndUpdateHud;
+	var viewport = __webpack_require__(3);
+	var twitchStream = __webpack_require__(7);
+	var hud = __webpack_require__(8);
 
 	var _ = __webpack_require__(5);
+
+	var stream = document.getElementById('cozmoStream');
 
 	var reconnectTimeout = void 0;
 	var imageRedrawInterval = void 0;
@@ -168,14 +168,15 @@
 
 	function connect() {
 
-	  toStatic();
-	  requestAndUpdateHud();
+	  twitchStream.start();
+	  hud.requestAndUpdate();
 
 	  socket.on('disconnect', function () {
 
-	    toStatic();
+	    viewport.toStatic();
 	    clearInterval(imageRedrawInterval);
-	    requestAndUpdateHud();
+	    hud.requestAndUpdate();
+	    twitchStream.start();
 
 	    if (!halt) {
 	      reconnectTimeout = setTimeout(function () {
@@ -186,26 +187,32 @@
 
 	  socket.on('connect', function () {
 	    imageRedrawInterval = setInterval(function () {
-	      updateImage(socket);
+	      viewport.updateImage(socket);
 	    }, 60);
-	    requestAndUpdateHud();
-	    toStream();
+	    hud.requestAndUpdate();
+	    viewport.toStream();
+	    twitchStream.stop();
 	  });
 
 	  socket.on('halt', function () {
-	    toStatic();
-	    requestAndUpdateHud();
+	    viewport.toStatic();
+	    hud.requestAndUpdate();
 	    halt = true;
+	    twitchStream.stop();
 	  });
 
-	  setupCozmoStream(socket);
+	  viewport.setupCozmoStream(socket);
 
 	  window.addEventListener('resize', _.throttle(function () {
-	    setupCozmoStream(socket);
+	    viewport.setupCozmoStream(socket);
 	  }, 100));
 	}
 
-	connect();
+	viewport.toStatic();
+
+	if (stream) {
+	  connect();
+	}
 
 	module.exports = socket;
 
@@ -17472,20 +17479,58 @@
 
 /***/ },
 /* 7 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var options = {
+	  width: 800,
+	  height: 450,
+	  channel: 'youaresee'
+	};
+
+	var perceptionStream = document.getElementById('perceptionStream');
+	var player = perceptionStream ? new Twitch.Player('perceptionStream', options) : false;
+
+	var started = false;
+
+	function stop() {
+	  if (player) {
+	    player.pause();
+	    perceptionStream.style.display = 'none';
+	    started = false;
+	  }
+	}
+
+	function start() {
+	  if (player && !started) {
+	    player.setQuality('low');
+	    player.play();
+	    perceptionStream.style.display = 'block';
+	    started = true;
+	  }
+	}
+
+	module.exports.stop = stop;
+	module.exports.start = start;
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _ = __webpack_require__(5);
-	var request = __webpack_require__(8);
-	var enableGuiControls = __webpack_require__(9).enableGuiControls;
-	var disableGuiControls = __webpack_require__(9).disableGuiControls;
+	var request = __webpack_require__(9);
+	var enableGuiControls = __webpack_require__(10).enableGuiControls;
+	var disableGuiControls = __webpack_require__(10).disableGuiControls;
 
 	var stream = document.getElementById('cozmoStream');
 	var queueStatus = document.getElementById('queueStatus');
 	var userHud = document.getElementById('userHud');
 
 	var currentlyPlayingUserData = void 0;
+	var updateHudInterval = void 0;
 
 	function updateHud(httpRequest) {
 
@@ -17546,11 +17591,16 @@
 	}
 
 	function error() {
-	  queueStatus.innerHTML = '<span class="consoleText">An error has occured.</span>';
-	  disableGuiControls();
+	  if (queueStatus) {
+	    queueStatus.innerHTML = '<span class="consoleText">An error has occured.</span>';
+	    disableGuiControls();
+	  }
 	}
 
 	function updateQueueStatus(userQueueDetails) {
+	  if (!queueStatus) {
+	    return;
+	  }
 
 	  if (userQueueDetails.minutesLeftInQueue === false) {
 	    queueStatus.innerHTML = '<span class="consoleText">Connection established.</span>';
@@ -17583,7 +17633,7 @@
 	  userHud.innerHTML = userHudHtml;
 	};
 
-	function requestAndUpdateHud() {
+	function requestAndUpdate() {
 	  request('/queue/user', updateHud);
 	}
 
@@ -17591,23 +17641,28 @@
 	  request('/queue/currentlyplaying', callback);
 	}, 20000);
 
-	var throttledUpdateHud = _.throttle(requestAndUpdateHud, 30000);
+	var throttledUpdateHud = _.throttle(requestAndUpdate, 30000);
 
 	function beginUpdatingHud() {
 	  if (!userHud) {
 	    return false;
 	  }
-	  window.setInterval(function () {
+	  updateHudInterval = window.setInterval(function () {
 	    throttledUpdateHud();
 	  }, 30000);
 	}
 
+	function stopUpdatingHud() {
+	  clearInterval(updateHudInterval);
+	}
+
 	module.exports.updateQueue;
 	module.exports.beginUpdatingHud = beginUpdatingHud;
-	module.exports.requestAndUpdateHud = requestAndUpdateHud;
+	module.exports.requestAndUpdate = requestAndUpdate;
+	module.exports.stopUpdatingHud = stopUpdatingHud;
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -17634,13 +17689,13 @@
 	};
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var input = __webpack_require__(1);
-	var Hammer = __webpack_require__(10);
+	var Hammer = __webpack_require__(11);
 	var keyMap = {
 	  wKey: 87,
 	  aKey: 65,
@@ -17766,7 +17821,7 @@
 	module.exports.disableGuiControls = disableGuiControls;
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.7 - 2016-04-22
