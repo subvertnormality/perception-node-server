@@ -22,7 +22,6 @@
     "passport.socketio": "^3.7.0",
     "redis": "^2.6.3",
     "socket.io": "^1.5.1",
-    "zerorpc": "^0.9.6",
     "zmq": "^2.15.3"
   },
   "devDependencies": {
@@ -39,8 +38,8 @@
   },
   "scripts": {
     "test": "mocha test --recursive",
-    "build-dev": "(node util/local-ip.js > ip.tmp) && docker-compose -f docker-compose-dev.yml build",
-    "dev": "(node util/local-ip.js > ip.tmp) && docker-compose -f docker-compose-dev.yml up",
+    "build-dev": "docker-compose -f docker-compose-dev.yml build",
+    "dev": "docker-compose -f docker-compose-dev.yml up",
     "build-prod": "docker-compose build",
     "prod": "docker-compose up"
   },

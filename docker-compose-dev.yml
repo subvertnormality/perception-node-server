@@ -18,6 +18,7 @@ services:
             - ./test:/usr/perception/test
             - ./ip.tmp:/usr/perception/ip.tmp
             - ./public:/usr/perception/public
+            - ./certs:/usr/perception/certs
     redis:
         image: redis
         ports:
