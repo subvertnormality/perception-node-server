@@ -159,11 +159,12 @@
 	var imageRedrawInterval = void 0;
 	var halt = false;
 
-	var socket = io('/', {
-	  'reconnection': true,
-	  'reconnectionDelay': 3000,
-	  'reconnectionDelayMax': 10000,
-	  'reconnectionAttempts': Infinity
+	var socket = io.connect('/', {
+	  reconnection: true,
+	  reconnectionDelay: 3000,
+	  reconnectionDelayMax: 10000,
+	  reconnectionAttempts: Infinity,
+	  transports: ['websocket']
 	});
 
 	function connect() {
@@ -188,7 +189,7 @@
 	  socket.on('connect', function () {
 	    imageRedrawInterval = setInterval(function () {
 	      viewport.updateImage(socket);
-	    }, 60);
+	    }, 140);
 	    hud.requestAndUpdate();
 	    viewport.toStream();
 	    twitchStream.stop();

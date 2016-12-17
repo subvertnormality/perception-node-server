@@ -1,12 +1,14 @@
 const express = require('express');
 const expressSession = require('express-session');
 const expressCookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const RedisStore = require('connect-redis')(expressSession);
 const app = express();
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {path: '/socket.io'});
 const initIo = require('./lib/io');
 const routes = require('./lib/routes');
+const gameRoutes = require('./lib/game-routes');
 const passport = require('./lib/passport').passport;
 const redis = require('./lib/redis');
 const expressHbs  = require('express-handlebars');
@@ -31,10 +33,12 @@ redis.on('ready', () => {
   app.use(express.static('public'))
   app.use(expressCookieParser());
   app.use(expressSession(sessionSettings));
+  app.use(bodyParser.json());
   app.use(passport.initialize());
   app.use(passport.session());
 
   routes(app, passport);
+  gameRoutes(app);
 
   initIo(io, sessionSettings);
 
