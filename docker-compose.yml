@@ -23,6 +23,9 @@ services:
         links:
             - web
         restart: always
+        volumes:
+            - ./nginx/ssl.conf.erb:/var/lib/nginx-conf/www.playperception.com.ssl.conf.erb:ro
+            - ./certs/ca.crt:/usr/perception/certs/ca.crt
         environment:
             STAGE: 'local'
             WEBSOCKET: 'true'

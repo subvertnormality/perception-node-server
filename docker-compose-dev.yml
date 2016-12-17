@@ -30,6 +30,9 @@ services:
             - '443:443'
         links:
             - web
+        volumes:
+            - ./nginx/ssl.conf.erb:/var/lib/nginx-conf/127.0.0.1.ssl.conf.erb:ro
+            - ./certs/ca.crt:/usr/perception/certs/ca.crt
         environment:
             STAGE: 'local'
             WEBSOCKET: 'true'
