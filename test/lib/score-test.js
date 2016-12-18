@@ -9,17 +9,13 @@ const rewire = require('rewire');
 const db = require(appRoot + '/lib/db');
 const redis = require(appRoot + '/lib/redis');
 const _ = require('lodash');
-const gameRoutes = rewire(appRoot + '/lib/game-routes')
+const score = rewire(appRoot + '/lib/score');
 const game = require(appRoot + '/lib/game');
 
 chai.use(sinonChai);
 
-describe('Game routes', () => {
+describe('Score', () => {
   const resetRewires = [];
-  const processScore = gameRoutes.__get__('processScore');
-  const res = {
-    status: sinon.spy()
-  };
 
   const config = {
     gamePointWin: 1,
@@ -39,9 +35,10 @@ describe('Game routes', () => {
     });
   });
 
+
   it('successfully adds points to the game score', (done) => {
 
-    processScore(game.currentGame, 'score', config.gamePointWin, (err) => {
+    score.processScore(game.currentGame, 'score', config.gamePointWin, (err) => {
       
       game.currentGame((err, game) => {
         expect(game.p('score')).to.equal(1);
@@ -53,7 +50,7 @@ describe('Game routes', () => {
 
   it('successfully adds shame points to the game score', (done) => {
 
-    processScore(game.currentGame, 'shame', config.gamePointWin, (err) => {
+    score.processScore(game.currentGame, 'shame', config.gamePointWin, (err) => {
       
       game.currentGame((err, game) => {
         expect(game.p('shame')).to.equal(1);
@@ -68,7 +65,7 @@ describe('Game routes', () => {
     game.currentGame((err, g) => {
       g.p('score', 11);
       g.save(() => {
-        processScore(game.currentGame, 'score', config.gamePointLoss, (err) => {
+        score.processScore(game.currentGame, 'score', config.gamePointLoss, (err) => {
           
           game.currentGame((err, g) => {
             expect(g.p('score')).to.equal(10);
@@ -82,7 +79,7 @@ describe('Game routes', () => {
 
   it('a consequential negative score value results in a 0 score', (done) => {
 
-    processScore(game.currentGame, 'score', config.gamePointLoss, (err) => {
+    score.processScore(game.currentGame, 'score', config.gamePointLoss, (err) => {
       
       game.currentGame((err, g) => {
         expect(g.p('score')).to.equal(0);
