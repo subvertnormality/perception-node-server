@@ -29,8 +29,7 @@
     "kangaroo": "/1/kangaroo.jpg",
     "koala": "/1/koala.jpg",
     "ladybug": "/1/ladybug.jpg",
-    "lizard": "/1/lizard.jpg",
-    "blue": "/1/blue.jpg"
+    "lizard": "/1/lizard.jpg"
   },
   {
     "alligator": "/2/alligator.jpg",
@@ -54,7 +53,10 @@
     "whale": "/2/whale.jpg",
     "batman": "/2/batman.jpg",
     "beetlejuice": "/2/beetlejuice.jpg",
-    "hellboy": "/2/hellboy.jpg"
+    "hellboy": "/2/hellboy.jpg",
+    "london": "/2/london.jpg",
+    "paris": "/2/paris.jpg",
+    "sydney": "/2/sydney.jpg"
   },
   {
     "aardvark": "/3/aardvark.jpg",
@@ -78,7 +80,8 @@
     "alien": "/3/alien.jpg",
     "ghostbusters": "/3/ghostbusters.jpg",
     "robocop": "/3/robocop.jpg",
-    "thor": "/3/thor.jpg"
+    "thor": "/3/thor.jpg",
+    "seattle": "/3/seattle.jpg"
   },
   {
     "dove": "/4/dove.jpg",
@@ -101,7 +104,10 @@
     "frank": "/4/frank.jpg",
     "grease": "/4/grease.jpg",
     "memento": "/4/memento.png",
-    "super": "/4/super.jpg"
+    "super": "/4/super.jpg",
+    "manchester": "/4/manchester.jpg",
+    "edinburgh": "/4/edinburgh.jpg",
+    "canada": "/4/canada.png"
   },
   {
     "bandicoot": "/5/bandicoot.jpg",
@@ -124,7 +130,14 @@
     "scream": "/5/scream.jpg",
     "skyfall": "/5/skyfall.jpg",
     "sunshine": "/5/sunshine.jpg",
-    "trainspotting": "/5/trainspotting.jpg"
+    "trainspotting": "/5/trainspotting.jpg",
+    "tokyo": "/5/tokyo.jpg",
+    "berlin": "/5/berlin.jpg",
+    "munich": "/5/munich.png",
+    "prague": "/5/prague.jpg",
+    "shanghai": "/5/shanghai.jpg",
+    "greece": "/5/greece.png",
+    "australia": "/5/australia.png"
   },
   {
     "bonobo": "/6/bonobos.jpg",
@@ -152,24 +165,40 @@
     "paul": "/6/paul.jpg",
     "secretary": "/6/secretary.jpg",
     "seven": "/6/seven.jpg",
-    "submarine": "/6/submarine.jpg"
+    "submarine": "/6/submarine.jpg",
+    "birmingham": "/6/birmingham.jpg",
+    "miami": "/6/miami.jpg",
+    "barcelona": "/6/barcelona.jpg",
+    "amsterdam": "/6/amsterdam.jpg",
+    "moscow": "/6/moscow.jpg",
+    "rome": "/6/rome.jpg",
+    "toronto": "/6/toronto.jpg",
+    "brazil": "/6/brazil.png"
   },
   {
     "adventureland": "/7/adventureland.jpg",
     "birdman": "/7/birdman.jpg",
-    "chaplin": "/7/chaplin.jpg",
     "closer": "/7/closer.jpg",
     "collateral": "/7/collateral.jpg",
     "goodfellas": "/7/goodfellas.png",
     "heat": "/7/heat.jpg",
     "hero": "/7/hero.jpg",
-    "jaws": "/7/jaws.jpg",
     "limitless": "/7/limitless.jpg",
     "mash": "/7/mash.png",
     "oldboy": "/7/oldboy.jpg",
     "prometheus": "/7/prometheus.jpg",
     "rushmore": "/7/rushmore.png",
-    "scanners": "/7/scanners.jpg"
+    "scanners": "/7/scanners.jpg",
+    "detroit": "/7/detroit.jpg",
+    "madrid": "/7/madrid.jpg",
+    "rotterdam": "/7/rotterdam.jpg",
+    "split": "/7/split.jpg",
+    "melbourne": "/7/melbourne.jpg",
+    "taipei": "/7/taipei.jpg",
+    "bangkok": "/7/bangkok.jpg",
+    "albania": "/7/albania.png",
+    "cambodia": "/7/cambodia.png",
+    "iraq": "/7/iraq.png"
   },
   {
     "bubble": "/8/bubble.jpg",
@@ -192,7 +221,16 @@
     "solaris": "/8/solaris.png",
     "traffic": "/8/traffic.jpg",
     "trance": "/8/trance.jpg",
-    "videodrome": "/8/videodrome.jpg"
+    "videodrome": "/8/videodrome.jpg",
+    "beijing": "/8/beijing.jpg",
+    "cologne": "/8/cologne.jpg",
+    "seoul": "/8/seoul.jpg",
+    "frankfurt": "/8/frankfurt.jpg",
+    "jakarta": "/8/jakarta.jpg",
+    "houston": "/8/houston.jpg",
+    "ecuador": "/8/ecuador.png",
+    "ethiopia": "/8/ethiopia.png",
+    "fiji": "/8/fiji.png"
   },
   {
     "antiviral": "/9/antiviral.jpg",
@@ -205,13 +243,34 @@
     "predator": "/9/predator.jpg",
     "timecrimes": "/9/timecrimes.jpg",
     "transcendence": "/9/transcendence.jpg",
-    "vertigo": "/9/vertigo.jpg"
+    "chongqing": "/9/chongqing.jpg",
+    "belize": "/9/belize.png",
+    "bhutan": "/9/bhutan.png",
+    "kenya": "/9/kenya.png",
+    "macedonia": "/9/macedonia.png",
+    "malaysia": "/9/malaysia.png"
+
   },
   {
     "calvary": "/10/calvary.jpg",
     "deliverance": "/10/deliverance.jpg",
     "everyday": "/10/everyday.jpg",
     "manhunter": "/10/manhunter.jpg",
-    "misery": "/10/misery.jpg"
+    "misery": "/10/misery.jpg",
+    "chaplin": "/10/chaplin.jpg",
+    "shenzhen": "/10/shenzhen.jpg",
+    "guangzhou": "/10/guangzhou.jpg",
+    "burundi": "/10/burundi.png",
+    "kazakhstan": "/10/kazakhstan.png"
+  },
+  {
+    "bahrain": "/11/bahrain.png",
+    "kiribati": "/11/kiribati.png",
+    "vertigo": "/11/vertigo.jpg"
+  },
+  {
+    "bahrain": "/12/bahrain.png",
+    "kiribati": "/12/kiribati.png",
+    "kyrgyzstan": "/12/kyrgyzstan.png"
   }
 ]
