@@ -24,11 +24,10 @@ services:
             - web
         restart: always
         volumes:
-            - ./nginx/ssl.conf.erb:/var/lib/nginx-conf/www.playperception.com.ssl.conf.erb:ro
-            - ./certs/ca.crt:/usr/perception/certs/ca.crt
+            - /home/ssl.conf.erb:/var/lib/nginx-conf/www.playperception.com.ssl.conf.erb:ro
+            - /home/ca.crt:/usr/perception/certs/ca.crt
         environment:
             STAGE: 'local'
             WEBSOCKET: 'true'
             DOMAINS: 'www.playperception.com -> http://web:3000'
-            STAGE: 'production'
             FORCE_RENEW: 'true'

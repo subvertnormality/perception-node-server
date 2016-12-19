@@ -42,7 +42,7 @@
     "build-dev": "docker-compose -f docker-compose-dev.yml build",
     "dev": "docker-compose -f docker-compose-dev.yml up",
     "build-prod": "docker-compose build",
-    "prod": "docker-compose up"
+    "prod": "docker-machine scp -r ./certs/ca.crt perception:/home/ca.crt && docker-machine scp -r ./nginx/ssl.conf.erb perception:/home/ssl.conf.erb && docker-compose up"
   },
   "author": "Andrew Hillel",
   "license": "ISC"
