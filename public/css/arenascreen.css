@@ -56,8 +56,10 @@ body {
 
 .artwo { 
   background-image: url(/assets/ar_2.svg);
+  background-size: 100% 100%;
 }
 
 .arthree { 
   background-image: url(/assets/ar_3.svg);
+  background-size: 100% 100%;
 }
