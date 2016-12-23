@@ -5,6 +5,22 @@ body {
   overflow-x: hidden;
   min-height: 500px;
   min-width: 800px;
+  margin: 0px;
+}
+
+.static {
+  position:fixed;
+  background:#000;
+}
+
+img {
+  position: absolute;
+  z-index: 10;
+  top: 0; left: 0; bottom: 0; right: 0;
+  margin: auto;
+  display: block;
+  max-height: 400px;
+  width: auto;
 }
 
 .blocks {

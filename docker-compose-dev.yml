@@ -16,7 +16,6 @@ services:
             - ./lib:/usr/perception/lib
             - ./views:/usr/perception/views
             - ./test:/usr/perception/test
-            - ./ip.tmp:/usr/perception/ip.tmp
             - ./public:/usr/perception/public
             - ./certs:/usr/perception/certs
     redis:
@@ -33,6 +32,7 @@ services:
         volumes:
             - ./nginx/ssl.conf.erb:/var/lib/nginx-conf/127.0.0.1.ssl.conf.erb:ro
             - ./certs/ca.crt:/usr/perception/certs/ca.crt
+            - ./game/images:/home/images
         environment:
             STAGE: 'local'
             WEBSOCKET: 'true'

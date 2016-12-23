@@ -46,6 +46,15 @@ server {
         }
     }
 
+    location /game/images/ {
+
+        alias /home/images/;
+
+        if ($ssl_client_verify != 'SUCCESS') {
+         return 403;
+        }
+    }
+
     <% else %>
     location / {
         root   <%= domain.www_root %>;

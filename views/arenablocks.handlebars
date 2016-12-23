@@ -1,8 +1,16 @@
-<div class="blocks">
-  <div id="one" class="block one {{oneClasses}}"></div>
-  <div id="two" class="block two {{twoClasses}}"></div>
-  <div id="three" class="block three {{threeClasses}}"></div>
-  <div id="four" class="block four {{fourClasses}}"></div>
-  <div id="five" class="block five {{fiveClasses}}"></div>
-  <div id="six" class="block six {{sixClasses}}"></div>
-</div>
+{{#if roundComplete}}
+  <div class="blocks">
+    <div id="one" class="block one {{oneClasses}}"></div>
+    <div id="two" class="block two {{twoClasses}}"></div>
+    <div id="three" class="block three {{threeClasses}}"></div>
+    <div id="four" class="block four {{fourClasses}}"></div>
+    <div id="five" class="block five {{fiveClasses}}"></div>
+    <div id="six" class="block six {{sixClasses}}"></div>
+  </div>
+{{else}}
+  <img src="/game/{{imageOne}}" id="imageOne" style="display: none;" />
+  <img src="/game/{{imageTwo}}" id="imageTwo" style="display: none;" />
+  <img src="/game/{{imageThree}}" id="imageThree" style="display: none;" />
+  <canvas class="static" id="static"></canvas>
+{{/if}}
+

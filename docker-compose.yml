@@ -26,6 +26,7 @@ services:
         volumes:
             - /home/ssl.conf.erb:/var/lib/nginx-conf/www.playperception.com.ssl.conf.erb:ro
             - /home/ca.crt:/usr/perception/certs/ca.crt
+            - /home/images:/home/images:ro
         environment:
             STAGE: 'local'
             WEBSOCKET: 'true'
