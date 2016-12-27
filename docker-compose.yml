@@ -28,7 +28,6 @@ services:
             - /home/ca.crt:/usr/perception/certs/ca.crt
             - /home/images:/home/images:ro
         environment:
-            STAGE: 'local'
+            STAGE: 'production'
             WEBSOCKET: 'true'
             DOMAINS: 'www.playperception.com -> http://web:3000'
-            FORCE_RENEW: 'true'
