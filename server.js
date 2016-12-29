@@ -7,13 +7,16 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http, {path: '/socket.io'});
 const initIo = require('./lib/io');
+const initGameIo = require('./lib/game-io')
 const routes = require('./lib/routes');
 const gameRoutes = require('./lib/game-routes');
 const passport = require('./lib/passport').passport;
 const redis = require('./lib/redis');
 const expressHbs  = require('express-handlebars');
+const crypto = require('crypto');
 
 const STORE_SECRET = 'Fjnewvi!£wei2847!jfaefb38DJFB09W';
+const SECURTY_HASH = crypto.randomBytes(16).toString('hex');
 
 redis.on('ready', () => {
 
@@ -38,9 +41,10 @@ redis.on('ready', () => {
   app.use(passport.session());
 
   routes(app, passport);
-  gameRoutes(app);
+  gameRoutes(app, SECURTY_HASH);
 
   initIo(io, sessionSettings);
+  initGameIo(io, SECURTY_HASH);
 
   http.listen(3000, function () {
     console.log('Listening on port 3000')
