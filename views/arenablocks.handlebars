@@ -2,7 +2,6 @@
 <div class="level text"><span class="consoleText">LEVEL: {{level}}</span></div>
 <div class="score text"><span class="consoleText">SCORE: {{score}}</span></div>
 <div class="shame text"><span class="consoleText">SHAME: {{shame}}</span></div>
-<div class="clue text"><span class="consoleText">{{clue}}</span></div>
 {{#if roundComplete}}
   <div class="blocks">
     <div id="one" class="block one {{oneClasses}}"></div>
@@ -13,6 +12,7 @@
     <div id="six" class="block six {{sixClasses}}"></div>
   </div>
 {{else}}
+  <div class="clue text"><span class="consoleText">{{clue}}</span></div>
   <img src="/game/{{imageOne}}" id="imageOne" style="display: none;" />
   <img src="/game/{{imageTwo}}" id="imageTwo" style="display: none;" />
   <img src="/game/{{imageThree}}" id="imageThree" style="display: none;" />
