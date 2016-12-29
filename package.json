@@ -23,6 +23,7 @@
     "passport.socketio": "^3.7.0",
     "redis": "^2.6.3",
     "socket.io": "^1.5.1",
+    "toobusy-js": "^0.5.1",
     "zmq": "^2.15.3"
   },
   "devDependencies": {
