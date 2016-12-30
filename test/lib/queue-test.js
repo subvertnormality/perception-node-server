@@ -79,11 +79,16 @@ describe('Queue', () => {
     let userFinished;
     let userEvents;
     let userEventsSpy;
+    let game;
+    let gameStub;
 
     beforeEach((done) => {
       userFinished = queue.__get__('userFinished');
       userEvents = queue.__get__('userEvents');
       userEventsSpy = sinon.spy(userEvents, 'emit');
+      game = queue.__get__('game');      
+      gameStub = sinon.stub(game, 'incrementGamesPlayed');
+      gameStub.yields();
       user = getFreshUser();
       user.p('queueJobId', 1);
       user.save((err) => {
@@ -93,12 +98,13 @@ describe('Queue', () => {
 
     afterEach(() => {
       userEvents.emit.restore();
+      gameStub.restore();
     });
 
     it('user queue id should be set to 0', (done) => {
 
       userFinished(user.id, () => {
-        user.load(user.id, function (err, properties) {
+        user.load(user.id, (err, properties) => {
           expect(user.p('queueJobId')).to.equal(0);
           done();
         });
@@ -109,7 +115,7 @@ describe('Queue', () => {
     it('user plays should be incremented', (done) => {
 
       userFinished(user.id, () => {
-        user.load(user.id, function (err, properties) {
+        user.load(user.id, (err, properties) => {
           expect(user.p('plays')).to.equal(1);
           done();
         });
@@ -120,12 +126,50 @@ describe('Queue', () => {
     it('user disconnect event should be emitted', (done) => {
 
       userFinished(user.id, () => {
-        user.load(user.id, function (err, properties) {
+        user.load(user.id, (err, properties) => {
           expect(userEventsSpy).to.have.been.calledWith('disconnect', user.id);
           done();
         });
       });
 
     });
+  });
+
+  describe('job process', () => {
+
+    let user;
+    let processJob;
+    let job;
+
+    beforeEach((done) => {
+      processJob = queue.__get__('processJob');
+      user = getFreshUser();
+      user.p('queueJobId', 1);
+      user.p('queueLastUpdate', Date.now() + 10 * 1000 * 60);
+      user.save((err) => {
+        job = {
+          data: {
+            userId: user.id,
+            jobId: 1
+          }
+        }
+        done();
+      });
+
+    });
+
+
+    it('job should be skipped if user queue timestamp is too big', (done) => {
+
+      processJob(job, () => {
+        user.load(user.id, (err, properties) => {
+          expect(user.p('queueJobId')).to.equal(0);
+          expect(user.p('plays')).to.equal(0);
+          done();
+        });
+      })
+
+    });
+
   });
 });
