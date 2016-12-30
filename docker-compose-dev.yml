@@ -22,6 +22,9 @@ services:
         image: redis
         ports:
             - "6379"
+        command: redis-server --appendonly yes
+        volumes:
+            - ./data:/data
     https-portal:
         image: steveltn/https-portal
         ports:
