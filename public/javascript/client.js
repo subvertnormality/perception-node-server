@@ -98,14 +98,9 @@
 	  commandInputModeStatus = commandInputModeStatus ? false : true;
 	};
 
-	function handleTextInput(toSay) {
+	var throttledHandleTextInput = _.throttle(function handleTextInput(toSay) {
 	  socket.emit('handle_say_text_event', { text: _.lowerCase(_.deburr(toSay)) });
-	  if ('speechSynthesis' in window) {
-	    var msg = new SpeechSynthesisUtterance(toSay);
-	    msg.pitch = 2;
-	    window.speechSynthesis.speak(msg);
-	  }
-	}
+	}, 2000);
 
 	function inCommandMode() {
 	  return commandInputModeStatus;
@@ -128,7 +123,7 @@
 	  commandPrompt.addEventListener('keydown', function (event) {
 	    commandPrompt.size = commandPrompt.value.length + 1;
 	    if (event.keyCode == 13) {
-	      handleTextInput(commandPrompt.value);
+	      throttledHandleTextInput(commandPrompt.value);
 	      commandPrompt.removeEventListener('blur', function () {});
 	      commandPrompt.blur();
 	      commandPrompt.size = 1;
@@ -159,7 +154,7 @@
 	var imageRedrawInterval = void 0;
 	var halt = false;
 
-	var socket = io.connect('/', {
+	var socket = io.connect('/play', {
 	  reconnection: true,
 	  reconnectionDelay: 3000,
 	  reconnectionDelayMax: 10000,
@@ -168,12 +163,11 @@
 	});
 
 	function connect() {
-
 	  twitchStream.start();
 	  hud.requestAndUpdate();
+	  socket.connect();
 
 	  socket.on('disconnect', function () {
-
 	    viewport.toStatic();
 	    clearInterval(imageRedrawInterval);
 	    hud.requestAndUpdate();
