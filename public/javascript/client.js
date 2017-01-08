@@ -17500,7 +17500,7 @@
 	var options = {
 	  width: '100%',
 	  height: '100%',
-	  channel: 'youaresee'
+	  channel: 'playperception'
 	};
 
 	var perceptionStream = document.getElementById('perceptionStream');
