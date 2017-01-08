@@ -3,6 +3,9 @@ server {
     server_name <%= domain.name %>;
 
     ssl on;
+    proxy_buffers 24 8k;
+    server_tokens off;
+
     ssl_certificate <%= domain.chained_cert_path %>;
     ssl_certificate_key <%= domain.key_path %>;
 
@@ -54,6 +57,7 @@ server {
          return 403;
         }
     }
+
 
     <% else %>
     location / {
