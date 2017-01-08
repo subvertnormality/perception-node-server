@@ -145,7 +145,7 @@ describe('Queue', () => {
       processJob = queue.__get__('processJob');
       user = getFreshUser();
       user.p('queueJobId', 1);
-      user.p('queueLastUpdate', Date.now() + 10 * 1000 * 60);
+      user.p('queueLastUpdate', Date.now() - 10 * 1000 * 60);
       user.save((err) => {
         job = {
           data: {
@@ -159,7 +159,7 @@ describe('Queue', () => {
     });
 
 
-    it('job should be skipped if user queue timestamp is too big', (done) => {
+    it('job should be skipped if user queue timestamp is too small', (done) => {
 
       processJob(job, () => {
         user.load(user.id, (err, properties) => {
