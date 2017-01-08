@@ -70,6 +70,21 @@ a {
   opacity: 0.8;
 }
 
+.console {
+  border: none;
+  color: #0fc127;
+  font-family: Consolas, monaco, monospace;
+	font-size: 14px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 300;
+	line-height: 22px;
+  padding: 0 5px 0 5px;
+  opacity: 0.8;
+  box-sizing:border-box;
+  -moz-box-sizing:border-box;
+}
+
 .connectWithTwitch {
   margin-top: 8px;
   width: 100px;
