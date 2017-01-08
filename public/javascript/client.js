@@ -180,7 +180,7 @@
 	    }
 	  });
 
-	  socket.on('connect', function () {
+	  socket.on('connect_success', function () {
 	    imageRedrawInterval = setInterval(function () {
 	      viewport.updateImage(socket);
 	    }, 140);
