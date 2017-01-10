@@ -17505,12 +17505,14 @@
 
 	var perceptionStream = document.getElementById('perceptionStream');
 	var player = perceptionStream ? new Twitch.Player('perceptionStream', options) : false;
+	var logo = document.getElementById('logo');
 
 	var started = false;
 
 	function stop() {
 	  if (player) {
 	    player.pause();
+	    logo.style.display = 'block';
 	    perceptionStream.style.display = 'none';
 	    started = false;
 	  }
@@ -17520,6 +17522,7 @@
 	  if (player && !started) {
 	    player.setQuality('low');
 	    player.play();
+	    logo.style.display = 'none';
 	    perceptionStream.style.display = 'block';
 	    started = true;
 	  }
@@ -17542,6 +17545,7 @@
 	var stream = document.getElementById('cozmoStream');
 	var queueStatus = document.getElementById('queueStatus');
 	var userHud = document.getElementById('userHud');
+	var logo = document.getElementById('logo');
 
 	var currentlyPlayingUserData = void 0;
 	var updateHudInterval = void 0;
@@ -17620,7 +17624,6 @@
 	    queueStatus.innerHTML = '<span class="consoleText">Connection established.</span>';
 	    enableGuiControls();
 	  } else if (userQueueDetails.minutesLeftInQueue > 0) {
-
 	    queueStatus.innerHTML = '<span class="consoleText">' + getCurrentlyPlayingContent() + ' is in control.</span><br/><span class="consoleText">You are in the queue. Approximately ' + userQueueDetails.minutesLeftInQueue + ' minute(s) remaining.</span>';
 
 	    throttledUpdateCurrentPlayer(updateCurrentlyPlayingUserData);
@@ -17638,11 +17641,12 @@
 	  }
 
 	  if (!userQueueDetails) {
-	    queueStatus.innerHTML = '<span class="consoleText">Error. Credentials unknown. Cannot establish connection.<span class="consoleText">';
-	    userHudHtml = '<a href="/auth"><img class="connectWithTwitch" src="assets/connect_dark.png" alt="Login with Twitch" /></a>';
+	    logo.style.display = 'none';
+	    queueStatus.innerHTML = '<span class="consoleText">Credentials unknown. Connect to Twitch to take control.</span><br/><a href="/auth"><img class="connectWithTwitch" src="assets/connect_dark.png" alt="Login with Twitch" /></a>';
+	    userHudHtml = '';
 	  } else {
-	    var logo = userQueueDetails.userLogo ? userQueueDetails.userLogo : 'assets/anon.png';
-	    userHudHtml = '<img class="userLogo" src="' + logo + '" class="logo"><br/>' + '<span class="consoleText">' + userQueueDetails.userDisplayName + '</span>';
+	    var _logo = userQueueDetails.userLogo ? userQueueDetails.userLogo : 'assets/anon.png';
+	    userHudHtml = '<img class="userLogo" src="' + _logo + '" class="logo"><br/>' + '<span class="consoleText">' + userQueueDetails.userDisplayName + '</span>';
 	  }
 	  userHud.innerHTML = userHudHtml;
 	};
