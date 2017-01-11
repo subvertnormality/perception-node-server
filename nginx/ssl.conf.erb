@@ -1,3 +1,6 @@
+proxy_cache_path /tmp/nginx levels=1:2 keys_zone=cache:10m inactive=60m;
+proxy_cache_key "$scheme$request_method$host$request_uri";
+
 server {
     listen 443 ssl http2;
     server_name www.<%= domain.name %>;
@@ -21,14 +24,12 @@ server {
     
     ssl_dhparam <%= dhparam_path %>;
 
-    <% if domain.upstream %>
     location / {
         proxy_pass <%= domain.upstream %>;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-
         <% if ENV['WEBSOCKET'] && ENV['WEBSOCKET'].downcase == 'true' %>
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -37,21 +38,36 @@ server {
         <% end %>
     }
 
+    location /queue/currentlyplaying {
+        proxy_cache cache;
+        proxy_cache_valid 200 302 30s;
+        proxy_cache_valid 404      30s;
+        proxy_pass <%= domain.upstream %>;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /scores {
+        proxy_cache cache;
+        proxy_cache_valid 200 302 30s;
+        proxy_cache_valid 404      30s;
+        proxy_pass <%= domain.upstream %>;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
     location /game {
         deny all;
-
     }
 
     location /game/images/ {
         deny all;
     }
 
-    <% else %>
-    location / {
-        root   <%= domain.www_root %>;
-        index  index.html;
-    }
-    <% end %>
 }
 
 server {
@@ -77,8 +93,6 @@ server {
     
     ssl_dhparam <%= dhparam_path %>;
 
-    <% if domain.upstream %>
-
     location /game {
         proxy_pass <%= domain.upstream %>;
         proxy_set_header Host $host;
@@ -94,11 +108,4 @@ server {
 
     }
 
-
-    <% else %>
-    location / {
-        root   <%= domain.www_root %>;
-        index  index.html;
-    }
-    <% end %>
 }
