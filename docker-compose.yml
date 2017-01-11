@@ -10,6 +10,7 @@ services:
         environment:
             - ENV=prod
             - ADDR=https://www.playperception.com/
+            - SECUREADDR=https://secure.playperception.com/
             - RPC_ADDR=1.tcp.eu.ngrok.io:20187
     redis:
         image: redis
@@ -27,10 +28,10 @@ services:
             - web
         restart: always
         volumes:
-            - /home/ssl.conf.erb:/var/lib/nginx-conf/www.playperception.com.ssl.conf.erb:ro
+            - /home/ssl.conf.erb:/var/lib/nginx-conf/playperception.com.ssl.conf.erb:ro
             - /home/ca.crt:/usr/perception/certs/ca.crt
             - /home/images:/home/images:ro
         environment:
             STAGE: 'production'
             WEBSOCKET: 'true'
-            DOMAINS: 'www.playperception.com -> http://web:3000'
+            DOMAINS: 'playperception.com -> http://web:3000'

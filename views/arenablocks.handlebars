@@ -13,9 +13,9 @@
   </div>
 {{else}}
   <div class="clue text"><span class="consoleText">{{clue}}</span></div>
-  <img src="/game/{{imageOne}}" id="imageOne" style="display: none;" />
-  <img src="/game/{{imageTwo}}" id="imageTwo" style="display: none;" />
-  <img src="/game/{{imageThree}}" id="imageThree" style="display: none;" />
+  <img src="{{secureAddr}}game/{{imageOne}}" id="imageOne" style="display: none;" />
+  <img src="{{secureAddr}}game/{{imageTwo}}" id="imageTwo" style="display: none;" />
+  <img src="{{secureAddr}}game/{{imageThree}}" id="imageThree" style="display: none;" />
   <canvas class="static" id="static"></canvas>
 {{/if}}
 

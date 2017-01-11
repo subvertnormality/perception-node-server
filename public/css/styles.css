@@ -469,7 +469,27 @@ a {
 
 }
 
+
+@media (min-width: 1180px) {
+  
+  .perceptionStream {
+    width: 1000px;
+    height: 555px;
+  }
+
+}
+
 @media (min-width: 1280px) {
+  
+  .perceptionStream {
+    width: 1100px;
+    height: 619px;
+  }
+
+}
+
+
+@media (min-width: 1380px) {
   
   .perceptionStream {
     width: 1200px;

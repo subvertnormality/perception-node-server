@@ -11,7 +11,9 @@ services:
         restart: always
         environment:
             - ENV=dev
-            - ADDR=https://127.0.0.1/
+            - ADDR=https://localhost/
+            - SECUREADDR=https://secure.localhost/
+            - RPC_ADDR=1.tcp.eu.ngrok.io:20245
         volumes:
             - ./lib:/usr/perception/lib
             - ./views:/usr/perception/views
@@ -33,10 +35,10 @@ services:
         links:
             - web
         volumes:
-            - ./nginx/ssl.conf.erb:/var/lib/nginx-conf/127.0.0.1.ssl.conf.erb:ro
+            - ./nginx/ssl.conf.erb:/var/lib/nginx-conf/localhost.ssl.conf.erb:ro
             - ./certs/ca.crt:/usr/perception/certs/ca.crt
             - ./game/images:/home/images
         environment:
             STAGE: 'local'
             WEBSOCKET: 'true'
-            DOMAINS: '127.0.0.1 -> http://web:3000'
+            DOMAINS: 'localhost -> http://web:3000'
