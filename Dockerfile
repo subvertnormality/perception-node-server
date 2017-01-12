@@ -10,5 +10,5 @@ WORKDIR /usr/perception
 ADD package.json package.json
 RUN npm install --production
 ADD . .
-CMD ["forever","start","server.js"]
+CMD ["npm","start","server.js"]
 EXPOSE 3000
