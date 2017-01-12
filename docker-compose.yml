@@ -28,7 +28,7 @@ services:
             - web
         restart: always
         volumes:
-            - /home/ssl.conf.erb:/var/lib/nginx-conf/playperception.com.ssl.conf.erb:ro
+            - /home/ssl.conf.erb:/var/lib/nginx-conf/www.playperception.com.ssl.conf.erb:ro
             - /home/ca.crt:/usr/perception/certs/ca.crt
             - /home/images:/home/images:ro
         environment:
