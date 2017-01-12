@@ -34,4 +34,4 @@ services:
         environment:
             STAGE: 'production'
             WEBSOCKET: 'true'
-            DOMAINS: 'playperception.com -> http://web:3000'
+            DOMAINS: 'www.playperception.com -> http://web:3000'
