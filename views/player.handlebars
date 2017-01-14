@@ -1,4 +1,8 @@
 <canvas class="static" id="static"></canvas>
+{{#if userDisplayName}}
 <div class="nowplaying text"><span class="consoleText">NOW PLAYING: {{userDisplayName}} / SCORE: {{score}}</span></div>
+{{else}}
+<div class="nowplaying text"><span class="consoleText">GO TO WWW.PLAYPERCEPTION.COM TO PLAY</span></div>
+{{/if}}
 <script src="{{addr}}javascript/static.js"></script>
 <script>setTimeout("location.reload(true);", 10000);</script>
