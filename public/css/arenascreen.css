@@ -19,29 +19,34 @@ body {
   display: block;
   padding: 24px;
   position: absolute;
-	font-size: 40px;
+	font-size: 30px;
 	font-style: normal;
 	font-variant: normal;
 	font-weight: 500;
-	line-height: 32px;
+	line-height: 22px;
   margin: 0 auto;
 
   z-index: 14;
 }
 
 .level {
-  bottom: 0px;
+  bottom: 100px;
+  right: 0;
+}
+
+.nowplaying {
+  bottom: 0px ;
   right: 0;
 }
 
 .score {
-  bottom: 60px;
+  bottom: 50px;
   right: 0;
 }
 
 .shame {
   color: red;
-  bottom: 120px; 
+  bottom: 0px; 
   right: 0;
 }
 

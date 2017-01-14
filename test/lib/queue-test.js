@@ -123,6 +123,21 @@ describe('Queue', () => {
 
     });
 
+    it('user plays should be incremented correctly when bigger than 0', (done) => {
+
+      userFinished(user.id, () => {
+        userFinished(user.id, () => {
+          userFinished(user.id, () => {
+            user.load(user.id, (err, properties) => {
+              expect(user.p('plays')).to.equal(3);
+              done();
+            });
+          });
+        });
+      });
+
+    });
+
     it('user disconnect event should be emitted', (done) => {
 
       userFinished(user.id, () => {
