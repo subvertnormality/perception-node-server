@@ -60,6 +60,8 @@
 	var textInput = document.getElementById('sayTextId');
 	var hud = __webpack_require__(8);
 	var _ = __webpack_require__(5);
+	var hudConsole = __webpack_require__(12);
+	var countdown = __webpack_require__(13);
 
 	// TODO: State here, nasty.
 	var commandInputModeStatus = false;
@@ -68,6 +70,9 @@
 	  var keyCode = e.keyCode ? e.keyCode : e.which;
 	  var hasCtrl = e.ctrlKey ? 1 : 0;
 	  var hasAlt = e.altKey ? 1 : 0;
+
+	  countdown.stopTimeoutCountdown();
+	  countdown.startTimeoutCountdown();
 
 	  if (e.keyCode === 13 && e.type === 'keydown') {
 	    (function () {
@@ -99,8 +104,10 @@
 	};
 
 	var throttledHandleTextInput = _.throttle(function handleTextInput(toSay) {
-	  socket.emit('handle_say_text_event', { text: _.lowerCase(_.deburr(toSay)) });
-	}, 2000);
+	  var sanatisedToSay = _.lowerCase(_.deburr(toSay));
+	  hudConsole.speak(sanatisedToSay);
+	  socket.emit('handle_say_text_event', { text: sanatisedToSay });
+	}, 3000);
 
 	function inCommandMode() {
 	  return commandInputModeStatus;
@@ -145,7 +152,8 @@
 	var viewport = __webpack_require__(3);
 	var twitchStream = __webpack_require__(7);
 	var hud = __webpack_require__(8);
-
+	var hudConsole = __webpack_require__(12);
+	var countdown = __webpack_require__(13);
 	var _ = __webpack_require__(5);
 
 	var stream = document.getElementById('cozmoStream');
@@ -172,6 +180,8 @@
 	    clearInterval(imageRedrawInterval);
 	    hud.requestAndUpdate();
 	    twitchStream.start();
+	    countdown.stopPlayCountdown();
+	    countdown.stopTimeoutCountdown();
 
 	    if (!halt) {
 	      reconnectTimeout = setTimeout(function () {
@@ -187,6 +197,8 @@
 	    hud.requestAndUpdate();
 	    viewport.toStream();
 	    twitchStream.stop();
+	    countdown.startPlayCountdown();
+	    countdown.startTimeoutCountdown();
 	  });
 
 	  socket.on('halt', function () {
@@ -194,6 +206,12 @@
 	    hud.requestAndUpdate();
 	    halt = true;
 	    twitchStream.stop();
+	    countdown.stopPlayCountdown();
+	    countdown.stopTimeoutCountdown();
+	  });
+
+	  socket.on('text_response', function (data) {
+	    hudConsole.handleMessage(data);
 	  });
 
 	  viewport.setupCozmoStream(socket);
@@ -20486,6 +20504,114 @@
 
 	})(window, document, 'Hammer');
 
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var consoleElement = document.getElementById('console');
+	var voices = void 0;
+
+	window.speechSynthesis.onvoiceschanged = function () {
+	  voices = window.speechSynthesis.getVoices();
+	};
+
+	function prependText(text) {
+	  var child = document.createElement('div');
+	  child.innerHTML = text;
+	  consoleElement.insertBefore(child, consoleElement.firstChild);
+	  setTimeout(function () {
+	    child.outerHTML = '';
+	  }, 20000);
+	}
+
+	function sayText(text, speaker) {
+	  if ('speechSynthesis' in window) {
+	    console.log(voices);
+	    var msg = new SpeechSynthesisUtterance(text);
+	    msg.pitch = 1;
+	    msg.voice = voices[speaker];
+	    window.speechSynthesis.speak(msg);
+	  }
+	}
+
+	function handleMessage(message) {
+	  setTimeout(function () {
+	    prependText('???: ' + message.reply);
+	    sayText(message.reply, 3);
+	  }, message.said.length * 500);
+	}
+
+	function speak(text) {
+	  prependText('Player: ' + text);
+	  sayText(text, 0);
+	}
+
+	module.exports.handleMessage = handleMessage;
+	module.exports.speak = speak;
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var playCountDownTimeout;
+	var timeoutCountDownTimer;
+
+	function startTimer(duration, display, prefix) {
+	  var timer = duration,
+	      minutes,
+	      seconds;
+	  return setInterval(function () {
+	    minutes = parseInt(timer / 60, 10);
+	    seconds = parseInt(timer % 60, 10);
+
+	    minutes = minutes < 10 ? "0" + minutes : minutes;
+	    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+	    display.textContent = prefix + ' ' + minutes + ":" + seconds;
+
+	    if (--timer < 0) {
+	      timer = 0, 0, 0;
+	    }
+	  }, 1000);
+	}
+
+	function startPlayCountdown() {
+	  document.getElementById('counters').style.display = 'block';
+	  document.getElementById('playCount').style.display = 'block';
+	  var playCountDown = document.getElementById('playCount').firstChild;
+	  playCountDownTimeout = startTimer(config.playTime, playCountDown, 'Control time left: ');
+	}
+
+	function stopPlayCountdown() {
+	  document.getElementById('playCount').style.display = 'none';
+	  var playCountDown = document.getElementById('playCount').firstChild;
+	  clearTimeout(playCountDownTimeout);
+	  playCountDown.innerHtml = '';
+	}
+
+	function startTimeoutCountdown() {
+	  document.getElementById('counters').style.display = 'block';
+	  document.getElementById('timeoutCount').style.display = 'block';
+	  var timeoutCountDown = document.getElementById('timeoutCount').firstChild;
+	  timeoutCountDownTimer = startTimer(config.timeoutTime, timeoutCountDown, 'Inactivity timeout in: ');
+	}
+
+	function stopTimeoutCountdown() {
+	  document.getElementById('timeoutCount').style.display = 'none';
+	  var timeoutCountDown = document.getElementById('timeoutCount').firstChild;
+	  clearTimeout(timeoutCountDownTimer);
+	  timeoutCountDown.innerHtml = '';
+	}
+
+	module.exports.startPlayCountdown = startPlayCountdown;
+	module.exports.stopPlayCountdown = stopPlayCountdown;
+	module.exports.startTimeoutCountdown = startTimeoutCountdown;
+	module.exports.stopTimeoutCountdown = stopTimeoutCountdown;
 
 /***/ }
 /******/ ]);
