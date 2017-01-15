@@ -25,8 +25,28 @@ body {
 	font-weight: 500;
 	line-height: 22px;
   margin: 0 auto;
-
   z-index: 14;
+}
+.highscores {
+  padding: 8px;
+}
+
+.highscore {
+  display: block;
+  padding: 4px;
+  position: relative;
+	font-size: 16px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 300;
+	line-height: 16px;
+  margin: 0 auto;
+  z-index: 14;
+}
+
+.red {
+  color: red;
+  font-weight: 800;
 }
 
 .level {

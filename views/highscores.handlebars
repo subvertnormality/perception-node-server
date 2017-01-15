@@ -1,0 +1,10 @@
+<canvas class="static" id="static"></canvas>
+
+<div class="highscores">
+<div class="highscore text red"><span class="consoleText">HIGH SCORES</span></div>
+{{#each highScoringUsers}}
+  <div class="highscore text"><span class="consoleText">{{displayName}} : {{score}}</span></div>
+{{/each}}
+</div>
+<script src="{{addr}}javascript/static.js"></script>
+<script>setTimeout("location.reload(true);", 20000);</script>

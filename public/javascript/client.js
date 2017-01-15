@@ -17620,7 +17620,7 @@
 	  var user = currentlyPlayingUserData;
 
 	  if (user && user.displayName) {
-	    return user.displayName + ' (' + user.plays + ' plays)';
+	    return user.displayName;
 	  }
 
 	  return defaultPlayingUserText;
@@ -20581,6 +20581,7 @@
 	}
 
 	function startPlayCountdown() {
+	  clearTimeout(playCountDownTimeout);
 	  document.getElementById('counters').style.display = 'block';
 	  document.getElementById('playCount').style.display = 'block';
 	  var playCountDown = document.getElementById('playCount').firstChild;
@@ -20595,6 +20596,7 @@
 	}
 
 	function startTimeoutCountdown() {
+	  clearTimeout(timeoutCountDownTimer);
 	  document.getElementById('counters').style.display = 'block';
 	  document.getElementById('timeoutCount').style.display = 'block';
 	  var timeoutCountDown = document.getElementById('timeoutCount').firstChild;
