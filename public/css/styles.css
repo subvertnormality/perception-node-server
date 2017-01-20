@@ -172,6 +172,19 @@ a {
   z-index: 10;
 }
 
+.joystickLeft {
+  position: relative;
+  bottom: 0;
+  left: 0;
+}
+
+.keysLeft {
+  position: relative;
+  bottom: 0;
+  left: 100px;
+}
+
+
 .controlsRight .keysTopRow { 
   margin-left: 100px;
   margin-bottom: 5px;
