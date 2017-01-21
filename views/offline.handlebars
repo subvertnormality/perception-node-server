@@ -1,8 +1,11 @@
 <canvas class="static" id="static"></canvas>
 <div class="offline">
   <img class="logo" src="{{addr}}assets/logo.svg" alt="perception" /><br/>
-  <span class="consoleText">OFFLINE</span>
+  <span class="consoleText">GAME OVER</span><p/>
 </div>
+<div class="offlineBottom">
+  <span class="consoleText">Follow <a href="https://www.twitch.tv/playperception">Perception on Twitch</a> to be alerted when the game restarts.</span>
+</div>  
 <script>
   (function() {
      window.setInterval(() => { window.location.reload(); }, 120000);

@@ -50,7 +50,7 @@ body {
 }
 
 .level {
-  bottom: 100px;
+  bottom: 0px;
   right: 0;
 }
 
@@ -66,7 +66,7 @@ body {
 
 .shame {
   color: red;
-  bottom: 0px; 
+  bottom: 100px; 
   right: 0;
 }
 

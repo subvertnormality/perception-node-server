@@ -172,6 +172,42 @@ a {
   z-index: 10;
 }
 
+.joystickLeft {
+  height: 140px;
+  width: 140px;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background-color: #026F00;
+  border: solid 1px;
+  opacity: 0.4;
+  background: repeating-linear-gradient(
+    45deg,
+    #0fc127,
+    #0fc127 10px,
+    #29DE41 10px,
+    #29DE41 20px
+  );
+}
+
+.controlsLeft .joystickLabel {
+  position: relative;
+  font-size: 12px;
+  color: #003607;
+  top: 12px;
+  left: 0px;
+  padding: 0px;
+  z-index: 11;
+  font-weight: 800;
+}
+
+.keysLeft {
+  position: relative;
+  bottom: 0;
+  left: 160px;
+  visibility: hidden;
+}
+
 .controlsRight .keysTopRow { 
   margin-left: 100px;
   margin-bottom: 5px;
@@ -195,14 +231,31 @@ a {
   display: block;
   padding: 24px;
   position: absolute;
-	font-size: 28px;
+	font-size: 18px;
 	font-style: normal;
 	font-variant: normal;
 	font-weight: 500;
-	line-height: 32px;
+	line-height: 22px;
   margin: 0 auto;
   top: 0px;
   z-index: 10;
+}
+
+.offlineBottom {
+  display: block;
+  padding: 24px;
+  position: absolute;
+	font-size: 18px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 22px;
+  margin: 0 auto;
+  bottom: 0px;
+}
+
+.offlineBottom a {
+  color: green;
 }
 
 .keyboard-key {
@@ -467,6 +520,13 @@ a {
 
 }
 
+@media (min-width: 800px) {
+
+  .keysLeft {
+    visibility: visible;
+  }
+
+
 @media (min-width: 900px) {
   
   .perceptionStream {
@@ -485,31 +545,3 @@ a {
 
 }
 
-
-@media (min-width: 1180px) {
-  
-  .perceptionStream {
-    width: 1000px;
-    height: 555px;
-  }
-
-}
-
-@media (min-width: 1280px) {
-  
-  .perceptionStream {
-    width: 1100px;
-    height: 619px;
-  }
-
-}
-
-
-@media (min-width: 1380px) {
-  
-  .perceptionStream {
-    width: 1200px;
-    height: 675px;
-  }
-
-}
