@@ -199,6 +199,7 @@
 	    twitchStream.stop();
 	    countdown.startPlayCountdown();
 	    countdown.startTimeoutCountdown();
+	    hudConsole.handleMessage('Welcome to Perception. Complete the tasks to progress. Proceed to the screen on the upper level for the next task.');
 	  });
 
 	  socket.on('halt', function () {
