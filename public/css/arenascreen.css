@@ -71,8 +71,13 @@ body {
 }
 
 .clue {
-  bottom: 0px;
-  font-size: 45px;
+  bottom: 10px;
+  font-size: 65px;
+}
+
+.roundHint {
+  top: 10px;
+  font-size: 65px;
 }
 
 .consoleText {
