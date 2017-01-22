@@ -199,7 +199,10 @@
 	    twitchStream.stop();
 	    countdown.startPlayCountdown();
 	    countdown.startTimeoutCountdown();
-	    hudConsole.handleMessage('Welcome to Perception. Complete the tasks to progress. Proceed to the screen on the upper level for the next task.');
+	    hudConsole.handleMessage({
+	      reply: 'Welcome to Perception. Complete the tasks to progress. Proceed to the screen on the upper level for the next task.',
+	      said: 'Intitate welcome text'
+	    });
 	  });
 
 	  socket.on('halt', function () {
@@ -22096,7 +22099,6 @@
 
 	function sayText(text, speaker) {
 	  if ('speechSynthesis' in window) {
-	    console.log(voices);
 	    var msg = new SpeechSynthesisUtterance(text);
 	    msg.pitch = 1;
 	    msg.voice = voices[speaker];
