@@ -18,6 +18,8 @@ const crypto = require('crypto');
 const STORE_SECRET = 'Fjnewvi!£wei2847!jfaefb38DJFB09W';
 const SECURTY_HASH = crypto.randomBytes(16).toString('hex');
 
+const chat = require('./lib/chat');
+
 redis.on('ready', () => {
 
   const redisStore = new RedisStore({
