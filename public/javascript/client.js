@@ -17642,6 +17642,12 @@
 	    return;
 	  }
 
+	  if (userQueueDetails.gamePlayerType !== 'hero') {
+	    disableGuiControls();
+	    queueStatus.innerHTML = '<span class="consoleText">Twitch chat is currently in control. The queue is still in place and will resume when chat scores. Go to <a href="https://www.twitch.tv/playperception">Twitch</a> to assist!</span>';
+	    return;
+	  }
+
 	  if (userQueueDetails.minutesLeftInQueue === false) {
 	    queueStatus.innerHTML = '<span class="consoleText">Connection established.</span>';
 	    enableGuiControls();

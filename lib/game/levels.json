@@ -91,15 +91,6 @@
       ]
     },
     {
-      "name": "national",
-      "count": 1791791,
-      "images": [
-        "images/national0.jpg",
-        "images/national1.jpg",
-        "images/national2.jpg"
-      ]
-    },
-    {
       "name": "action",
       "count": 1788248,
       "images": [
@@ -259,15 +250,6 @@
         "images/private0.jpg",
         "images/private1.jpg",
         "images/private2.jpg"
-      ]
-    },
-    {
-      "name": "led",
-      "count": 1535684,
-      "images": [
-        "images/LED0.jpg",
-        "images/LED1.jpg",
-        "images/LED2.jpg"
       ]
     },
     {

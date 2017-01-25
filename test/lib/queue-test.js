@@ -81,6 +81,7 @@ describe('Queue', () => {
     let userEventsSpy;
     let game;
     let gameStub;
+    let gamePlayerModeStub;
 
     beforeEach((done) => {
       userFinished = queue.__get__('userFinished');
@@ -89,6 +90,8 @@ describe('Queue', () => {
       game = queue.__get__('game');      
       gameStub = sinon.stub(game, 'incrementGamesPlayed');
       gameStub.yields();
+      gamePlayerModeStub = sinon.stub(game, 'playerMode');
+      gamePlayerModeStub.yields();
       user = getFreshUser();
       user.p('queueJobId', 1);
       user.save((err) => {
@@ -99,6 +102,7 @@ describe('Queue', () => {
     afterEach(() => {
       userEvents.emit.restore();
       gameStub.restore();
+      gamePlayerModeStub.restore();
     });
 
     it('user queue id should be set to 0', (done) => {
